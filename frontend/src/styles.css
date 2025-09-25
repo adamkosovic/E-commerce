@@ -1,1 +1,33 @@
 /* You can add global styles to this file, and also import other style files */
+* {
+  font-family: "Noto Sans", sans-serif;
+}
+
+:root {
+  /* Bas färger */
+  --brand-dark: #1A2A80;
+  --brand-main: #3B38A0;
+  --brand-light: #7A85C1;
+  --brand-pale: #B2B0E8;
+
+  /* Semantiska tokens */
+
+  --color-bg: #ffffff;
+  --color-bg-alt: #f6f7fb;
+  --color-text: #1a1a1a;
+  --color-text-muted: #555770;
+
+  --color-primary: var(--brand-main);
+  --color-primary-hover: var(--brand-dark);
+  --color-primary-contrast: #ffffff;
+
+  --color-secondary: var(--brand-light);
+  --color-secondary-contrast: #ffffff;
+
+  --color-accent: var(--brand-pale);
+  --color-accent-contrast: #1a1a1a;
+
+
+  --color-border: #e2e5f0;
+  --color-ring: var(--brand-main);
+}
