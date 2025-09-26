@@ -8,14 +8,15 @@
 .navbar-div {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: space-around;
   width: 100%;
-  padding: 10px 20px;
   border-bottom: 2px solid var(--color-border);
+  height: 80px;
 }
 
-.navbar h1 {
+.navbar h4 {
   color: var(--color-primary);
+  font-size: 20px;
 }
 
 .nav-list {
@@ -40,6 +41,46 @@
 .navLi a:hover {
   color: var(--color-primary);
 }
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+  padding: 7px 20px;
+  margin-right: 20px;
+}
+
+.search-bar img {
+  width: 16px;
+  height: 16px;
+  margin-right: 10px;
+}
+
+.search-bar input {
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--color-text);
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-cart {
+  position: relative;
+  margin-right: 20px;
+  cursor: pointer;
+}
+
+.navbar-cart-button {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
 
 .login-button {
   background: var(--color-primary);

@@ -2,16 +2,21 @@
   <nav class="navbar">
     <div class="navbar-div">
       <div>
-        <h1>Hemnet</h1>
-      </div>
-      <div>
         <ul class="nav-list">
-          <li class="navLi"><a routerLink=""  routerLinkActive="is-active" [routerLinkActiveOptions]="{ exact: true }" >Home</a></li>
+          <li class="navLi"><a routerLink=""  routerLinkActive="is-active" [routerLinkActiveOptions]="{ exact: true }" ><h4>Ecommerce</h4></a></li>
+          <li class="navLi"><a routerLink="/shop" routerLinkActive="is-active">Shop</a></li>
+          <li class="navLi"><a routerLink="/stories" routerLinkActive="is-active">Stories</a></li>
           <li class="navLi"><a routerLink="/about" routerLinkActive="is-active">About</a></li>
-          <li class="navLi"><a routerLink="/contact" routerLinkActive="is-active">Contact</a></li>
         </ul>
       </div>
-      <div>
+      <div class="search-bar">
+        <img src="assets/icons/Search.png" alt="search-icon">
+        <input type="text" placeholder="Search..." class="search-input">
+      </div>
+      <div class="navbar-right">
+        <div class="navbar-cart">
+          <button class="navbar-cart-button"><img src="assets/icons/Vector.png" alt="shopping-cart"></button>
+        </div>
         <button class="login-button">Login</button>
       </div>
     </div>
