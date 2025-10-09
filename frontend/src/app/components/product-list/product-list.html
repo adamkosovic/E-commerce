@@ -1,0 +1,11 @@
+<div class="product-list">
+  <div
+    class="product-card"
+    *ngFor="let product of products; trackBy: trackByProduct"
+    (click)="goToProductDetail(product.id)"
+  >
+    <img [src]="product.imageUrl" [alt]="product.name" />
+    <h3>{{ product.name }}</h3>
+    <p class="price">${{ product.price }}</p>
+  </div>
+</div>

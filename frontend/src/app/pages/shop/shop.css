@@ -1,0 +1,23 @@
+.shop-grid {
+  display: grid;
+  grid-template-areas: 
+  "sidebar toolbar"
+  "sidebar content";
+  grid-template-columns: 250px 1fr;
+  grid-template-rows: auto auto 1fr;
+  gap: 2rem;
+  padding: 1.5rem;
+}
+
+
+.shop-grid .sidebar {
+  grid-area: sidebar;
+}
+
+.shop-grid .toolbar {
+  grid-area: toolbar;
+}
+
+.shop-grid .content {
+  grid-area: content;
+}

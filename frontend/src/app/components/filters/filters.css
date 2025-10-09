@@ -1,0 +1,4 @@
+.filter-group {
+  display: flex;
+  flex-direction: column;
+}
