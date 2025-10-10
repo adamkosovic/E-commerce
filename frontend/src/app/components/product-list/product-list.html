@@ -1,8 +1,8 @@
 <div class="product-list">
   <div
     class="product-card"
-    *ngFor="let product of products; trackBy: trackByProduct"
-    (click)="goToProductDetail(product.id)"
+    *ngFor="let product of products"
+    (click)="goToProduct(product.id)"
   >
     <img [src]="product.imageUrl" [alt]="product.name" />
     <h3>{{ product.name }}</h3>

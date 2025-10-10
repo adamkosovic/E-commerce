@@ -1,2 +1,23 @@
-
-
+@if (product) {
+  <div class="productDetail">
+    <div class="productDetail-left">
+      <img src="{{ product.imageUrl }}" alt="productImg">
+    </div>
+    <div class="productDetail-right">
+      <div>
+        <h2> {{ product.name }}</h2>
+        <h5>${{ product.price }}</h5>
+        <p> {{ product.description }}</p>
+      </div>
+      <div>
+        <p>Size</p>
+      </div>
+      <div>
+        <button>Add to cart</button>
+        <button>Buy Now</button>
+      </div>
+    </div>
+  </div>
+} @else {
+  <p>Produkten kunde ej hittas</p>
+}
