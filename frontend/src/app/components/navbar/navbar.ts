@@ -8,5 +8,7 @@ import { RouterLink, RouterLinkActive } from "@angular/router";
   styleUrl: './navbar.css'
 })
 export class Navbar {
-
+  Login () {
+    window.location.href = '/login';
+  }
 }
