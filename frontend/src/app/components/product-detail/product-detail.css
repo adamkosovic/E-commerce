@@ -6,7 +6,7 @@
   gap: 5rem;
 }
 
-.productDetail img {
+.product-img {
   width: 600px;
   height: 600px;
   object-fit: cover;
@@ -46,4 +46,18 @@
 .productDetail-right button:hover {
   background-color: #555;
   color: white;
+}
+
+
+.offcanvas-added {
+  display: flex;
+  justify-content: center;
+}
+
+.offcanvas-added img {
+  margin-right: 15px;
+}
+
+.offcanvas-added h4 {
+  margin: 0px;
 }

@@ -71,7 +71,7 @@ export class ProductService {
     },
   ]
 
-
+  private cart: any[] = [];
 
   getAll () {
     return this.products;
