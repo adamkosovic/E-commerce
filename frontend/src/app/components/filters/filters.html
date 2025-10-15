@@ -1,19 +1,16 @@
-<aside>
-  <div>
+<aside class="filter-panel">
+  <div class="filter-header">
     <h3>Filters</h3>
-    <p>Clear filters</p>
+    <button class="clear-btn">Clear filters</button>
   </div>
   <h4>Categories</h4>
 
   <form id="filterForm" action="/filter" method="get">
-
-    <div>
-      <div class="filter-group">
+    <div class="filter-group">
         <label><input type="checkbox" name="kategori" value="tshirt"> T-shirt</label>
         <label><input type="checkbox" name="kategori" value="jacka"> Jackor</label>
         <label><input type="checkbox" name="kategori" value="byxor"> Byxor</label>
         <label><input type="checkbox" name="kategori" value="klänning"> Klänningar</label>
-      </div>
     </div>
 
   </form>

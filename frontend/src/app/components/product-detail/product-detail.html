@@ -1,36 +1,54 @@
 @if (product) {
-  <div class="productDetail">
+  <div class="productDetail container">
     <div class="productDetail-left">
       <img class="product-img" src="{{ product.imageUrl }}" alt="productImg">
     </div>
     <div class="productDetail-right">
       <div>
-        <h2 class="productDetail-right-h2"> {{ product.name }}</h2>
-        <h5 class="productDetail-right-h5">${{ product.price }}</h5>
-        <p class="productDetail-right-p"> {{ product.description }}</p>
+        <h2 class="pd-title"> {{ product.name }}</h2>
+        <h5 class="pd-price">${{ product.price }}</h5>
+        <p class="pd-desc"> {{ product.description }}</p>
       </div>
-      <div>
-        <p>Size</p>
+        <div class="pd-size">
+          <label class="pd-label" for="size">Size</label>
+          <div class="size-group" role="radiogroup" aria-label="Choose size">
+            <!-- Exempelstorlekar: byt mot dina dynamiska -->
+            <input type="radio" name="size" id="size-s" class="size-input" value="S">
+            <label class="size-pill" for="size-s">S</label>
+  
+            <input type="radio" name="size" id="size-m" class="size-input" value="M" checked>
+            <label class="size-pill" for="size-m">M</label>
+  
+            <input type="radio" name="size" id="size-l" class="size-input" value="L">
+            <label class="size-pill" for="size-l">L</label>
+  
+            <input type="radio" name="size" id="size-xl" class="size-input" value="XL" disabled>
+            <label class="size-pill is-disabled" for="size-xl">XL</label>
+        </div>
       </div>
       <div>
         <button class="btn btn-light" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">Add to Cart</button>
 
         <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
-          <div class="offcanvas-header">
-            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-          </div>
+
           <div class="offcanvas-body">
             <div class="offcanvas-added">
-              <img src="assets/icons/check-circle.svg" alt="check icon">
-              <h4 id="offcanvasRightLabel">Added to your cart</h4>
+              <img src="assets/icons/check-circle.svg" alt="Added">
+              <p class="offcanvas-p">Item added successfully</p>
             </div>
+  
             <div class="offcanvas-productInfo">
-              <img class="offcanvas-prodctImg" src="{{ product.imageUrl }}" alt="productImg">
-              <h2 class="offcanvas-h2"> {{ product.name }}</h2>
-              <h5 class="offcanvas-h5">${{ product.price }}</h5>
+              <img class="offcanvas-productImg" src="{{ product.imageUrl }}" alt="{{ product.name }}">
+              <div>
+                <h2 class="offcanvas-h2">{{ product.name }}</h2>
+                <h5 class="offcanvas-h5">${{ product.price }}</h5>
+              </div>
             </div>
-            <div>
-              <button class="btn btn-dark" type="button" data-bs-dismiss="offcanvas" aria-label="Close">View Cart & Checkout</button>
+  
+            <div class="offcanvas-actions">
+              <button class="btn-dark-full" type="button" data-bs-dismiss="offcanvas" aria-label="Close">
+                View Cart & Checkout
+              </button>
             </div>
           </div>
         </div>

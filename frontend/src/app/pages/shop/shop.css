@@ -16,6 +16,8 @@
 
 .shop-grid .toolbar {
   grid-area: toolbar;
+  display: flex;
+  justify-content: flex-end;
 }
 
 .shop-grid .content {

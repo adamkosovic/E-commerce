@@ -1,34 +1,72 @@
-/* components/product-list/product-list.component.css */
+
+
+
 .product-list {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.2rem;
-  padding: 5rem;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1.5rem;
+  padding: 1rem 0;
 }
+
 .product-card {
-  background: #fff;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  overflow: hidden;
   cursor: pointer;
-  border-radius: 0.5rem;
-  transition: tramsform 0.3s ease, box-shadow 0.3s ease;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  display: flex;
+  flex-direction: column;
 }
 
 .product-card:hover {
-  transform: scale(1.03);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  border-color: #d1d5db;
 }
-
 
 .product-card img {
   width: 100%;
-  height: 70%;
-  margin-bottom: 0.75rem;
+  height: 240px;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+
+.product-card .content {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  justify-content: space-between;
 }
 
 .product-card h3 {
-  font-weight: 700;
-  margin-bottom: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 0.4rem;
 }
 
 .product-card .price {
-  font-weight: 400;
+  font-weight: 500;
+  font-size: 0.95rem;
+  color: #2563eb;
+}
+
+/* Optional subtle animation when loading */
+.product-card {
+  animation: fadeIn 0.4s ease forwards;
+}
+
+/* Responsive spacing */
+@media (max-width: 768px) {
+  .product-list {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1rem;
+  }
+
+  .product-card img {
+    height: 200px;
+  }
 }
