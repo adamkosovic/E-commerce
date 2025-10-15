@@ -18,18 +18,18 @@
 }
 
 
-.productDetail-right h2 {
+.productDetail-right-h2 {
   font-size: 2.5rem;
   font-weight: 600;
 }
 
-.productDetail-right h5 {
+.productDetail-right-h5 {
   font-size: 1.5rem;
   font-weight: 500;
   margin-bottom: 2rem;
 }
 
-.productDetail-right p {
+.productDetail-right-p {
   font-size: 1.3rem;
   color: #555;
 } 
@@ -52,6 +52,7 @@
 .offcanvas-added {
   display: flex;
   justify-content: center;
+  margin-bottom: 50px;
 }
 
 .offcanvas-added img {
@@ -59,5 +60,28 @@
 }
 
 .offcanvas-added h4 {
-  margin: 0px;
+  margin-bottom: 0px;
+}
+
+.offcanvas-productInfo {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.offcanvas-prodctImg {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+}
+
+.offcanvas-h2 {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.offcanvas-h5 {
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
 }

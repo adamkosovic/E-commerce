@@ -5,9 +5,9 @@
     </div>
     <div class="productDetail-right">
       <div>
-        <h2> {{ product.name }}</h2>
-        <h5>${{ product.price }}</h5>
-        <p> {{ product.description }}</p>
+        <h2 class="productDetail-right-h2"> {{ product.name }}</h2>
+        <h5 class="productDetail-right-h5">${{ product.price }}</h5>
+        <p class="productDetail-right-p"> {{ product.description }}</p>
       </div>
       <div>
         <p>Size</p>
@@ -25,10 +25,9 @@
               <h4 id="offcanvasRightLabel">Added to your cart</h4>
             </div>
             <div class="offcanvas-productInfo">
-              <h2> {{ product.name }}</h2>
-              <h5>${{ product.price }}</h5>
-              <p> {{ product.description }}</p>
-              <img class="product-img" src="{{ product.imageUrl }}" alt="productImg">
+              <img class="offcanvas-prodctImg" src="{{ product.imageUrl }}" alt="productImg">
+              <h2 class="offcanvas-h2"> {{ product.name }}</h2>
+              <h5 class="offcanvas-h5">${{ product.price }}</h5>
             </div>
             <div>
               <button class="btn btn-dark" type="button" data-bs-dismiss="offcanvas" aria-label="Close">View Cart & Checkout</button>
