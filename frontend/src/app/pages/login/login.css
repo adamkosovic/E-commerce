@@ -9,7 +9,9 @@
 .login-section {
   display: flex;
   justify-content: center;
-  max-height: 50vh;
+  align-items: center;
+  flex-direction: column;
+  max-height: 53vh;
   width: 100%;
   padding: 20px;
   margin-top: 70px;
@@ -22,6 +24,7 @@
   width: 100%;
   max-width: 500px;
   padding: 40px;  
+  margin-bottom: 20px;
 }
 
 .login-form h2 {
