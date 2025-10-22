@@ -1,20 +1,32 @@
-using Backend.Models;
+// Data/AppDbContext.cs
 using Microsoft.EntityFrameworkCore;
+using backend.Models;
 
-namespace Backend.Data;
-
-public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
+namespace backend.Data
 {
-  public DbSet<Listing> Listings => Set<Listing>();
-
-    protected override void OnModelCreating(ModelBuilder b)
+    public class AppDbContext : DbContext
     {
-        b.Entity<Listing>()
-            .Property(p => p.Price)
-            .HasPrecision(18, 2);
+        public AppDbContext(DbContextOptions<AppDbContext> options)
+            : base(options)
+        {
+        }
 
-        b.Entity<Listing>().HasIndex(p => p.City);
-        b.Entity<Listing>().HasIndex(p => new { p.City, p.Price });
-        b.Entity<Listing>().HasIndex(p => p.ListedAtUtc);
-   }
+        // Tabeller
+        public DbSet<Product> Products => Set<Product>();
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Product>(entity =>
+            {
+                entity.HasKey(p => p.id);     // du använder 'id' (litet i)
+                entity.HasIndex(p => p.Title);
+
+                // (valfritt) rimliga constraints/typer
+                entity.Property(p => p.Title).IsRequired().HasMaxLength(200);
+                entity.Property(p => p.Price).HasColumnType("numeric(18,2)");
+            });
+        }
+    }
 }
