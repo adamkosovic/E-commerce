@@ -2,6 +2,8 @@ using backend.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Identity;
+using backend.Models;
 using System.Text;
 using backend.Services;
 
@@ -63,6 +65,7 @@ builder.Services
 
 builder.Services.AddAuthorization();
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
 var app = builder.Build();
 
