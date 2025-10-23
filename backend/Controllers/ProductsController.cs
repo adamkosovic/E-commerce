@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using backend.Models;
 using backend.Data;
+using Microsoft.AspNetCore.Authorization;
 
 namespace backend.Controllers;
 
@@ -14,6 +15,7 @@ public class ProductsController : ControllerBase
 
   //GET /products
   [HttpGet]
+  [AllowAnonymous]
   public async Task<IActionResult> GetAll()
   {
     var products = await _db.Products.ToListAsync();
@@ -22,6 +24,7 @@ public class ProductsController : ControllerBase
 
   //GET /products/{id}
   [HttpGet("{id:guid}")]
+  [AllowAnonymous]
   public async Task<IActionResult> GetById (Guid id)
   {
     var product = await _db.Products.FindAsync(id);
@@ -34,7 +37,8 @@ public class ProductsController : ControllerBase
 
   //POST /products
   [HttpPost]
-  public async Task<IActionResult> Create(Product product)
+  [Authorize(Roles = "Admin")]
+  public async Task<IActionResult> Create([FromBody] Product product)
   {
     product.id = Guid.NewGuid();
     _db.Products.Add(product);
