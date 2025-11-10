@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using backend.Models;
 using System.Text;
 using backend.Services;
+using System.Security.Claims;
 
 
 
@@ -13,7 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c =>
+builder.Services.AddSwaggerGen(c => 
 {
     c.SwaggerDoc("v1", new() { Title = "Backend API", Version = "v1" });
     c.AddSecurityDefinition("Bearer", new()
@@ -59,7 +60,10 @@ builder.Services
             ValidateIssuerSigningKey = true,
             ValidIssuer = jwt["Issuer"],
             ValidAudience = jwt["Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(keyBytes)
+            IssuerSigningKey = new SymmetricSecurityKey(keyBytes),
+
+            RoleClaimType = ClaimTypes.Role,
+            NameClaimType = ClaimTypes.NameIdentifier
         };
     });
 

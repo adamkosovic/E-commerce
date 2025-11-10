@@ -40,10 +40,10 @@ public class ProductsController : ControllerBase
   [Authorize(Roles = "Admin")]
   public async Task<IActionResult> Create([FromBody] Product product)
   {
-    product.id = Guid.NewGuid();
+    product.Id = Guid.NewGuid();
     _db.Products.Add(product);
     await _db.SaveChangesAsync();
-    return CreatedAtAction(nameof(GetById), new { id = product.id }, product);
+    return CreatedAtAction(nameof(GetById), new { id = product.Id }, product);
   }
 
   //PUT /products/{id}

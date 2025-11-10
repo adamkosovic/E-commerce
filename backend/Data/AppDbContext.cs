@@ -14,6 +14,8 @@ namespace backend.Data
         // Tabeller
         public DbSet<Product> Products => Set<Product>();
         public DbSet<User> Users => Set<User>();
+        public DbSet<Order> Orders => Set<Order>();
+        public DbSet<OrderItem> OrderItems => Set<OrderItem>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -22,7 +24,8 @@ namespace backend.Data
             //Product
             modelBuilder.Entity<Product>(entity =>
             {
-                entity.HasKey(p => p.id);   
+                entity.HasKey(p => p.Id);
+                entity.Property(p => p.Id).HasColumnName("id");   // <-- mappa till DB-kolumnen
                 entity.HasIndex(p => p.Title);
                 entity.Property(p => p.Title).IsRequired().HasMaxLength(200);
                 entity.Property(p => p.Price).HasColumnType("numeric(18,2)");
@@ -48,6 +51,33 @@ namespace backend.Data
                 entity.Property(u => u.Role)
                     .IsRequired()
                     .HasMaxLength(32);
+            });
+
+            //Order
+            modelBuilder.Entity<Order>(entity =>
+            {
+                entity.HasKey(o => o.Id);
+                entity.HasIndex(o => o.UserId);
+
+                entity.HasOne(o => o.User)
+                    .WithMany()
+                    .HasForeignKey(o => o.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.Property(o => o.Currency).HasMaxLength(8);
+
+                entity.HasMany(o => o.Items)
+                    .WithOne(i => i.Order)
+                    .HasForeignKey(i => i.OrderId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<OrderItem>(entity =>
+            {
+                entity.HasKey(oi => oi.Id);
+                entity.Property(oi => oi.Title)
+                    .IsRequired()
+                    .HasMaxLength(200);
             });
         }
     }

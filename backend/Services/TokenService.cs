@@ -8,7 +8,7 @@ namespace backend.Services;
 
 public interface ITokenService
 {
-    string CreateToken(string userId, string email, IEnumerable<string> roles);
+    string CreateToken(string uid, string email, IEnumerable<string> roles);
 }
 
 public class TokenService : ITokenService
@@ -16,7 +16,7 @@ public class TokenService : ITokenService
     private readonly IConfiguration _config;
     public TokenService(IConfiguration config) => _config = config;
 
-    public string CreateToken(string userId, string email, IEnumerable<string> roles)
+    public string CreateToken(string uid, string email, IEnumerable<string> roles)
     {
         var jwt = _config.GetSection("Jwt");
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt["Key"]!));
@@ -24,9 +24,9 @@ public class TokenService : ITokenService
 
         var claims = new List<Claim>
         {
-            new(JwtRegisteredClaimNames.Sub, userId),
+            new(JwtRegisteredClaimNames.Sub, uid),
             new(JwtRegisteredClaimNames.Email, email),
-            new(ClaimTypes.NameIdentifier, userId),
+            new(ClaimTypes.NameIdentifier, uid),
             new(ClaimTypes.Name, email)
         };
         claims.AddRange(roles.Select(r => new Claim(ClaimTypes.Role, r)));
