@@ -1,15 +1,13 @@
 import { Component } from '@angular/core';
-import { ProductList } from "../../components/product-list/product-list";
-import { SortBy } from "../../components/sort-by/sort-by";
-import { CategoryMenu } from "../../components/category-menu/category-menu";
-import { Filters } from "../../components/filters/filters";
+import { ProductListComponent } from '../../components/product-list/product-list';
 
 
 @Component({
   selector: 'app-shop',
-  imports: [ProductList, SortBy, CategoryMenu, Filters],
+  standalone: true,
+  imports: [ProductListComponent],
   templateUrl: './shop.html',
-  styleUrl: './shop.css'
+  styleUrls: ['./shop.css']
 })
 export class Shop {
 }

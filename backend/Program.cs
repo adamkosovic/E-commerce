@@ -45,6 +45,15 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddDbContext<AppDbContext>(opt =>
     opt.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
 
+// CORS - Tillåt Angular dev-servern
+builder.Services.AddCors(o =>
+{
+    o.AddPolicy("NgDev", p => p
+        .WithOrigins("http://localhost:4200")
+        .AllowAnyHeader()
+        .AllowAnyMethod());
+});
+
 var jwt = builder.Configuration.GetSection("Jwt");
 var keyBytes = Encoding.UTF8.GetBytes(jwt["Key"]!);
 
@@ -78,12 +87,29 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+else 
+{
+    app.UseHsts();
+}
+
 
 app.UseHttpsRedirection();
-
+app.UseCors("NgDev");  // Aktivera CORS i dev miljö (ofarligt även i prod om origin matchar)
 app.UseAuthentication();
 app.UseAuthorization();
 
+
+// 🚧 Tillfälligt bortkommenterat under utveckling.
+// Angular körs separat via ng serve (port 4200) och proxy till API.
+// Avkommentera dessa rader när appen ska byggas för produktion
+// och Angular-dist-filerna ska servas från wwwroot:
+
+// app.UseDefaultFiles();     
+// app.UseStaticFiles();
+// app.MapFallbackToFile("index.html");
+
 app.MapControllers();
+
+
 app.Run();
 

@@ -1,11 +1,25 @@
-<div class="product-list">
-  <div
-    class="product-card"
-    *ngFor="let product of products"
-    (click)="goToProduct(product.id)"
-  >
-    <img [src]="product.imageUrl" [alt]="product.name" />
-    <h3>{{ product.name }}</h3>
-    <p class="price">${{ product.price }}</p>
-  </div>
-</div>
+<h1>Produkterna</h1>
+  
+
+@if (products$ | async; as products) {
+  @if (products.length > 0) {
+    <div class="product-list">
+      @for (p of products; track p.id) {
+        <article class="product-card">
+          <h3 class="product-title">
+            <a [routerLink]="['/shop', p.id]">{{ p.title }}</a>
+          </h3>
+          <p class="product-desc">{{ p.description }}</p>
+          <strong class="product-price">
+            {{ p.price | currency:'SEK':'symbol-narrow' }}
+          </strong>
+        </article>
+      }
+    </div>
+  } @else {
+    <p>Inga produkter hittades.</p>
+  }
+} @else {
+  <p>Laddar produkter…</p>
+}
+

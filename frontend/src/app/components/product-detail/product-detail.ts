@@ -1,37 +1,41 @@
-import { Component,  OnInit} from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { ProductService } from '../../services/product/products';
-import { Product } from '../../models/product/product.model';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Observable, of } from 'rxjs';
+import { catchError, switchMap, map, tap } from 'rxjs/operators';
+import { ProductService } from '../../product.service';
+import { Product } from '../../models/product/product.model';
 
 @Component({
   selector: 'app-product-detail',
+  standalone: true,
   imports: [CommonModule],
   templateUrl: './product-detail.html',
-  styleUrl: './product-detail.css'
+  styleUrls: ['./product-detail.css']
 })
-export class ProductDetail implements OnInit {
-  product?: Product;
+export class ProductDetailComponent {
+  // Use a single Product for a detail page
+  product$: Observable<Product | null>;
 
-  constructor( 
+  constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private productservice: ProductService,
-    ) {}
-
-  ngOnInit() {
-    const id = this.route.snapshot.paramMap.get('id');
-    if (!id) {
-      this.router.navigate(['/shop']);
-      return;
-    }
-
-    const found = this.productservice.getById(id);
-    if (!found) {
-      this.router.navigate(['/shop']);
-      return;
-    }
-
-    this.product = found;
+    private productService: ProductService,
+  ) {
+    this.product$ = this.route.paramMap.pipe(
+      map(params => params.get('id')),
+      switchMap(id => {
+        if (!id) {
+          this.router.navigate(['/shop']);
+          return of(null);
+        }
+        return this.productService.getById(id).pipe(
+          catchError(() => {
+            this.router.navigate(['/shop']);
+            return of(null);
+          })
+        );
+      })
+    );
   }
 }

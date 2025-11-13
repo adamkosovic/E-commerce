@@ -3,7 +3,7 @@ namespace backend.Models
 {
     public class Product
     {
-        public Guid Id { get; set; } // med litet i – matchar OnModelCreating
+        public Guid Id { get; set; } 
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public decimal Price { get; set; }

@@ -9,7 +9,7 @@ import { CategoryMenu } from './components/category-menu/category-menu';
 @Component({
   selector: 'app-root',
   standalone: true, 
-  imports: [RouterOutlet, Navbar, Footer],
+  imports: [RouterOutlet, Navbar],
   templateUrl: './app.html',
   styleUrls: ['./app.css'] 
 })

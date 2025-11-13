@@ -1,8 +1,11 @@
+/**
+ * Represents a product in the application.
+ */
+
 export interface Product {
   id: string;
-  name: string;
-  price: number;
+  title: string;
   description?: string;
+  price: number;
   imageUrl: string;
-  categories: string[];
 }

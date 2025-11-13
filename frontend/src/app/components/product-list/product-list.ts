@@ -1,32 +1,23 @@
-import { Component, OnInit } from '@angular/core';
-import { Product } from '../../models/product/product.model';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
-import { ProductService } from '../../services/product/products';
-
-
+import { RouterModule } from '@angular/router';
+import { Observable } from 'rxjs';
+import { ProductService } from '../../product.service';
+import { Product } from '../../models/product/product.model';
 
 @Component({
-  selector: 'app-product-list',
+  selector: 'app-product-list-component',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './product-list.html',
-  styleUrl: './product-list.css'
+  styleUrls: ['./product-list.css']
 })
-export class ProductList implements OnInit {
-  products: Product[] = [];
+export class ProductListComponent {
+  products$: Observable<Product[]>;
 
-  constructor (private productService: ProductService, private router: Router) {}
-
-  
-  ngOnInit() {
-    this.products = this.productService.getAll();
+  constructor(private productService: ProductService) {
+    this.products$ = this.productService.getAll();
   }
-  
-  goToProduct(id: string) {
-    this.router.navigate(['/shop', id]);
-  }
-  
 
   trackByProductId(index: number, product: Product): string {
     return product.id;

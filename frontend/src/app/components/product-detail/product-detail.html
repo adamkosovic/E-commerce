@@ -1,53 +1,78 @@
-@if (product) {
+@if (product$ | async; as product) {
   <div class="productDetail container">
     <div class="productDetail-left">
-      <img class="product-img" src="{{ product.imageUrl }}" alt="productImg">
+      <img
+        class="product-img"
+        alt="product-img"
+        [src]="product.imageUrl"
+        [attr.alt]="product.title || 'Produktbild'">
     </div>
+
     <div class="productDetail-right">
       <div>
-        <h2 class="pd-title"> {{ product.name }}</h2>
-        <h5 class="pd-price">${{ product.price }}</h5>
-        <p class="pd-desc"> {{ product.description }}</p>
+        <h2 class="pd-title">{{ product.title }}</h2>
+        <h5 class="pd-price">{{ product.price | currency:'SEK':'symbol-narrow' }}</h5>
+        <p class="pd-desc">{{ product.description }}</p>
       </div>
-        <div class="pd-size">
-          <label class="pd-label" for="size">Size</label>
-          <div class="size-group" role="radiogroup" aria-label="Choose size">
-            <!-- Exempelstorlekar: byt mot dina dynamiska -->
-            <input type="radio" name="size" id="size-s" class="size-input" value="S">
-            <label class="size-pill" for="size-s">S</label>
-  
-            <input type="radio" name="size" id="size-m" class="size-input" value="M" checked>
-            <label class="size-pill" for="size-m">M</label>
-  
-            <input type="radio" name="size" id="size-l" class="size-input" value="L">
-            <label class="size-pill" for="size-l">L</label>
-  
-            <input type="radio" name="size" id="size-xl" class="size-input" value="XL" disabled>
-            <label class="size-pill is-disabled" for="size-xl">XL</label>
+
+      <div class="pd-size">
+        <label class="pd-label" for="size">Storlek</label>
+        <div class="size-group" role="radiogroup" aria-label="Välj storlek">
+          <input type="radio" name="size" id="size-s" class="size-input" value="S">
+          <label class="size-pill" for="size-s">S</label>
+
+          <input type="radio" name="size" id="size-m" class="size-input" value="M" checked>
+          <label class="size-pill" for="size-m">M</label>
+
+          <input type="radio" name="size" id="size-l" class="size-input" value="L">
+          <label class="size-pill" for="size-l">L</label>
+
+          <input type="radio" name="size" id="size-xl" class="size-input" value="XL" disabled>
+          <label class="size-pill is-disabled" for="size-xl">XL</label>
         </div>
       </div>
-      <div>
-        <button class="btn btn-light" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">Add to Cart</button>
 
-        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+      <div>
+        <button
+          class="btn btn-light"
+          type="button"
+          data-bs-toggle="offcanvas"
+          data-bs-target="#offcanvasRight"
+          aria-controls="offcanvasRight">
+          Lägg i kundvagn
+        </button>
+
+        <div
+          class="offcanvas offcanvas-end"
+          tabindex="-1"
+          id="offcanvasRight"
+          aria-labelledby="offcanvasRightLabel">
 
           <div class="offcanvas-body">
             <div class="offcanvas-added">
-              <img src="assets/icons/check-circle.svg" alt="Added">
-              <p class="offcanvas-p">Item added successfully</p>
+              <img src="assets/icons/check-circle.svg" alt="Tillagd i kundvagn">
+              <p class="offcanvas-p">Produkten har lagts till!</p>
             </div>
-  
+
             <div class="offcanvas-productInfo">
-              <img class="offcanvas-productImg" src="{{ product.imageUrl }}" alt="{{ product.name }}">
+              <img
+                class="offcanvas-productImg"
+                alt="productInfo"
+                [src]="product.imageUrl"
+                [attr.alt]="product.title || 'Produktbild'">
               <div>
-                <h2 class="offcanvas-h2">{{ product.name }}</h2>
-                <h5 class="offcanvas-h5">${{ product.price }}</h5>
+                <h2 class="offcanvas-h2">{{ product.title }}</h2>
+                <h5 class="offcanvas-h5">{{ product.price | currency:'SEK':'symbol-narrow' }}</h5>
               </div>
             </div>
-  
+
             <div class="offcanvas-actions">
-              <button class="btn-dark-full" type="button" data-bs-dismiss="offcanvas" aria-label="Close">
-                View Cart & Checkout
+              <button
+                class="btn-dark-full"
+                type="button"
+                data-bs-dismiss="offcanvas"
+                aria-label="Close">
+                Visa kundvagn & Till kassan
               </button>
             </div>
           </div>
@@ -56,5 +81,5 @@
     </div>
   </div>
 } @else {
-  <p>Produkten kunde ej hittas</p>
+  <p>Produkten kunde ej hittas.</p>
 }
