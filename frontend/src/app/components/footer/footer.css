@@ -3,8 +3,9 @@
   padding: 70px 100px;
   display: flex;
   justify-content: space-around;
-  height: 50vh;
-  background-color: #CBDCEB;
+  height: 40vh;
+  background-color: #8CA9FF;
+  border-radius: 2%;
 }
 
 .footerOne h3 {
