@@ -26,6 +26,22 @@ export class AuthService {
     );
   }
 
+  register(email: string, password: string) {
+    return this.http
+      .post<AuthResponse>(`${this.apiUrl}/auth/register`, { email, password })
+      .pipe(
+        tap(response => {
+        localStorage.setItem('token', response.token);
+        localStorage.setItem('role', response.role);
+      })
+    );
+  }
+
+  logout(): void {
+    localStorage.removeItem('token');
+    localStorage.removeItem('role');
+  }
+
   isLoggedIn(): boolean {
     return !!localStorage.getItem('token');
   }

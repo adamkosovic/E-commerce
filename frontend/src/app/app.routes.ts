@@ -7,6 +7,7 @@ import { Shop } from './pages/shop/shop'; // Example additional component
 import { Stories } from './pages/stories/stories'; // Example additional component
 import { ProductDetailComponent } from './components/product-detail/product-detail';
 import { Login } from './pages/login/login';
+import { Register } from './pages/register/register';
 
 
 
@@ -17,7 +18,7 @@ export const routes: Routes = [
   { path: 'stories', component: Stories, title: 'Stories' },
   { path: 'about', component: About, title: 'About' },
   { path: 'login', component: Login, title: 'Login' },
-  { path: 'register', loadChildren: () => import('./pages/register/register').then(m => m.Register), title: 'Register' },
+  { path: 'register', component: Register, title: 'Register' },
   { path: 'yourCart', loadChildren: () => import('./pages/payment/your-cart/your-cart').then(m => m.YourCart), title: 'Your Cart' }, 
   { path: '**', redirectTo: '' } // Wildcard route for a 404 page
 ];

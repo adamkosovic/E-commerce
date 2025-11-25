@@ -1,0 +1,114 @@
+:host {
+  display: block;
+  background-color: #EFF2F6;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+}
+
+.login-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  max-height: 53vh;
+  width: 100%;
+  padding: 20px;
+  margin-top: 70px;
+} 
+
+.login-form {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 500px;
+  padding: 40px;  
+  margin-bottom: 20px;
+}
+
+.login-form h2 {
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.login-form h4 {
+  margin-bottom: 30px;
+  color: #666;
+  font-weight: 400;
+}
+
+.form-group {
+  text-align: left;
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  color: #333;
+  font-weight: 500;
+}
+
+input[type="email"],
+input[type="password"] {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 15px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+input[type="email"]:focus,
+input[type="password"]:focus {
+  border-color: #6c63ff;
+  box-shadow: 0 0 0 2px rgba(108, 99, 255, 0.2);
+  outline: none;
+}
+
+/* Options-rad */
+.form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  font-size: 14px;
+}
+
+.remember-label {
+  color: #555;
+}
+
+.forgot-link {
+  color: #6c63ff;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.forgot-link:hover {
+  color: #3a3d98;
+  cursor: pointer;
+}
+
+/* Knapp */
+.login-button {
+  width: 100%;
+  background: #6c63ff;
+  color: white;
+  border: none;
+  padding: 14px;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s, transform 0.1s;
+}
+
+.login-button:hover {
+  background: #5751d9;
+}
+
+.login-button:active {
+  transform: scale(0.98);
+}

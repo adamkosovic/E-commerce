@@ -11,4 +11,8 @@ export class Navbar {
   Login () {
     window.location.href = '/login';
   }
+
+  Register () {
+    window.location.href = '/register';
+  }
 }
