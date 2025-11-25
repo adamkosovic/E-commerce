@@ -16,30 +16,85 @@
           <li class="navLi"><a routerLink="/about" routerLinkActive="is-active">About</a></li>
         </ul>
       </div>
-      <div class="navbar-right">
-        <img src="assets/icons/heart-fill.svg" alt="heartIcon" class="heartIcon" />
-        <div class="navbar-cart">
-          <button class="navbar-cart-button">
-            <img src="assets/icons/bag-fill.svg" alt="shopping-cart" />
-          </button>
-        </div>
-        <div class="dropdown">
-          <button
-            class="login-button"
-            type="button"
+
+      <ul class="navbar-icons">
+
+        <!-- HEART ICON -->
+        <li class="icon-item">
+          <img
+            src="assets/icons/heart-fill.svg"
+            alt="heart"
+            class="nav-icon"
+            routerLink="/wishlist"
+          />
+        </li>
+      
+        <!-- CART ICON -->
+        <li class="icon-item">
+          <img
+            src="assets/icons/bag-fill.svg"
+            alt="shopping-cart"
+            class="nav-icon"
+            routerLink="/cart"
+          />
+        </li>
+      
+        <!-- ACCOUNT DROPDOWN -->
+        <li class="icon-item dropdown" *ngIf="auth.isLoggedIn()">
+          <img
+            src="assets/icons/person-fill.svg"
+            alt="account"
+            class="nav-icon profile-icon"
             data-bs-toggle="dropdown"
             aria-expanded="false"
-          >
-          <img src="assets/icons/person-fill.svg" alt="account-person" />
-          </button>
+          />
+      
           <ul class="dropdown-menu dropdown-menu-end">
-            <li><a class="dropdown-item" href="#" (click)="Login()">Login</a></li>
-            <li><a class="dropdown-item" href="#" (click)="Register()">Register</a></li>
-            <li><a class="dropdown-item" href="#">Logout</a></li>
+            <li><a class="dropdown-item" routerLink="/profile">Profile</a></li>
+            <li><a class="dropdown-item" (click)="onLogout()">Logout</a></li>
           </ul>
-        </div>
+        </li>
+      
+        <!-- IF NOT LOGGED IN SHOW LOGIN/REGISTER -->
+        <li class="icon-item" *ngIf="!auth.isLoggedIn()">
+          <a class="nav-link small-link" routerLink="/login">Login</a>
+        </li>
+        <li class="icon-item" *ngIf="!auth.isLoggedIn()">
+          <a class="nav-link small-link" routerLink="/register">Register</a>
+        </li>
+      
+      </ul>
 
-      </div>
     </div>
   </nav>
 </header>
+
+
+
+
+
+<!-- <div class="navbar-right">
+  <img src="assets/icons/heart-fill.svg" alt="heartIcon" class="heartIcon" />
+  <div class="navbar-cart">
+    <button class="navbar-cart-button">
+      <img src="assets/icons/bag-fill.svg" alt="shopping-cart" />
+    </button>
+  </div>
+
+
+
+  <div class="dropdown">
+    <button
+      class="login-button"
+      type="button"
+      data-bs-toggle="dropdown"
+      aria-expanded="false"
+    >
+    <img src="assets/icons/person-fill.svg" alt="account-person" />
+    </button>
+    <ul class="dropdown-menu dropdown-menu-end">
+      <li><a class="dropdown-item" href="#" (click)="Login()">Login</a></li>
+      <li><a class="dropdown-item" href="#" (click)="Register()">Register</a></li>
+      <li><a class="dropdown-item" href="#">Logout</a></li>
+    </ul>
+  </div> -->

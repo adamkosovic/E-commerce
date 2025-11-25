@@ -1,18 +1,31 @@
-import { Component } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { RouterLink, RouterLinkActive } from "@angular/router";
+import { AuthService } from '../../auth/auth.service';
+import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-navbar',
-  imports: [RouterLinkActive, RouterLink],
+  standalone: true,
+  imports: [RouterLinkActive, RouterLink, NgIf],
   templateUrl: './navbar.html',
   styleUrl: './navbar.css'
 })
+
 export class Navbar {
-  Login () {
-    window.location.href = '/login';
+
+  constructor(public auth: AuthService) {}
+
+  onLogout () {
+    localStorage.clear();
+    window.location.reload();
   }
 
-  Register () {
-    window.location.href = '/register';
-  }
+
+  // Login () {
+  //   window.location.href = '/login';
+  // }
+
+  // Register () {
+  //   window.location.href = '/register';
+  // }
 }
