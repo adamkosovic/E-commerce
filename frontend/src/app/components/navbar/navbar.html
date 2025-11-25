@@ -3,18 +3,42 @@
     <div class="navbar-div">
       <div>
         <ul class="nav-list">
-          <li class="navLi"><a routerLink=""  routerLinkActive="is-active" [routerLinkActiveOptions]="{ exact: true }" >Home</a></li>
+          <li class="navLi">
+            <a
+              routerLink=""
+              routerLinkActive="is-active"
+              [routerLinkActiveOptions]="{ exact: true }"
+              >Home</a
+            >
+          </li>
           <li class="navLi"><a routerLink="/shop" routerLinkActive="is-active">Shop</a></li>
           <li class="navLi"><a routerLink="/stories" routerLinkActive="is-active">Stories</a></li>
           <li class="navLi"><a routerLink="/about" routerLinkActive="is-active">About</a></li>
         </ul>
       </div>
       <div class="navbar-right">
-        <img src="assets/icons/heart-fill.svg" alt="heartIcon" class="heartIcon">
+        <img src="assets/icons/heart-fill.svg" alt="heartIcon" class="heartIcon" />
         <div class="navbar-cart">
-          <button class="navbar-cart-button"><img src="assets/icons/bag-fill.svg" alt="shopping-cart"></button>
+          <button class="navbar-cart-button">
+            <img src="assets/icons/bag-fill.svg" alt="shopping-cart" />
+          </button>
         </div>
-        <button (click)="Login()" class="login-button"><img src="assets/icons/person-fill.svg" alt="account-person"></button>
+        <div class="dropdown">
+          <button
+            class="login-button"
+            type="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+          <img src="assets/icons/person-fill.svg" alt="account-person" />
+          </button>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="#" (click)="Login()">Login</a></li>
+            <li><a class="dropdown-item" href="#">Register</a></li>
+            <li><a class="dropdown-item" href="#">Logout</a></li>
+          </ul>
+        </div>
+
       </div>
     </div>
   </nav>
