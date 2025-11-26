@@ -1,24 +1,41 @@
 <header>
   <nav class="navbar">
     <div class="navbar-div">
-      <div>
-        <ul class="nav-list">
+
+      <!-- Vänster: logo / huvudmeny + hamburger meny -->
+      <div class="nav-left">
+        <!-- Hamburgerknapp (visas bara i mobilvy) -->
+        <button
+          class="menu-toggle"
+          type="button"
+          (click)="toggleMenu()"
+          aria-label="Toggle navigation">
+            <img src="assets/icons/lines.png" alt="menu icon" class="menu-icon" />
+        </button>
+
+        <ul class="nav-list" [class.open]="menuOpen">
           <li class="navLi">
             <a
               routerLink=""
               routerLinkActive="is-active"
               [routerLinkActiveOptions]="{ exact: true }"
+              (click)="closeMenu()"
               >Home</a
             >
           </li>
-          <li class="navLi"><a routerLink="/shop" routerLinkActive="is-active">Shop</a></li>
-          <li class="navLi"><a routerLink="/stories" routerLinkActive="is-active">Stories</a></li>
-          <li class="navLi"><a routerLink="/about" routerLinkActive="is-active">About</a></li>
+          <li class="navLi">
+            <a routerLink="/shop" routerLinkActive="is-active" (click)="closeMenu()">Shop</a>
+          </li>
+          <li class="navLi">
+            <a routerLink="/stories" routerLinkActive="is-active" (click)="closeMenu()">Stories</a>
+          </li>
+          <li class="navLi">
+            <a routerLink="/about" routerLinkActive="is-active" (click)="closeMenu()">About</a>
+          </li>
         </ul>
       </div>
 
       <ul class="navbar-icons">
-
         <!-- HEART ICON -->
         <li class="icon-item">
           <img
@@ -28,7 +45,7 @@
             routerLink="/wishlist"
           />
         </li>
-      
+
         <!-- CART ICON -->
         <li class="icon-item">
           <img
@@ -38,7 +55,7 @@
             routerLink="/cart"
           />
         </li>
-      
+
         <!-- ACCOUNT DROPDOWN -->
         <li class="icon-item dropdown" *ngIf="auth.isLoggedIn()">
           <img
@@ -48,13 +65,13 @@
             data-bs-toggle="dropdown"
             aria-expanded="false"
           />
-      
+
           <ul class="dropdown-menu dropdown-menu-end">
             <li><a class="dropdown-item" routerLink="/profile">Profile</a></li>
             <li><a class="dropdown-item" (click)="onLogout()">Logout</a></li>
           </ul>
         </li>
-      
+
         <!-- IF NOT LOGGED IN SHOW LOGIN/REGISTER -->
         <li class="icon-item" *ngIf="!auth.isLoggedIn()">
           <a class="nav-link small-link" routerLink="/login">Login</a>
@@ -62,39 +79,7 @@
         <li class="icon-item" *ngIf="!auth.isLoggedIn()">
           <a class="nav-link small-link" routerLink="/register">Register</a>
         </li>
-      
       </ul>
-
     </div>
   </nav>
 </header>
-
-
-
-
-
-<!-- <div class="navbar-right">
-  <img src="assets/icons/heart-fill.svg" alt="heartIcon" class="heartIcon" />
-  <div class="navbar-cart">
-    <button class="navbar-cart-button">
-      <img src="assets/icons/bag-fill.svg" alt="shopping-cart" />
-    </button>
-  </div>
-
-
-
-  <div class="dropdown">
-    <button
-      class="login-button"
-      type="button"
-      data-bs-toggle="dropdown"
-      aria-expanded="false"
-    >
-    <img src="assets/icons/person-fill.svg" alt="account-person" />
-    </button>
-    <ul class="dropdown-menu dropdown-menu-end">
-      <li><a class="dropdown-item" href="#" (click)="Login()">Login</a></li>
-      <li><a class="dropdown-item" href="#" (click)="Register()">Register</a></li>
-      <li><a class="dropdown-item" href="#">Logout</a></li>
-    </ul>
-  </div> -->

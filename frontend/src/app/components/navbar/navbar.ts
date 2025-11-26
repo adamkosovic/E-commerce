@@ -13,19 +13,21 @@ import { NgIf } from '@angular/common';
 
 export class Navbar {
 
+  menuOpen = false;
+
   constructor(public auth: AuthService) {}
 
+  
+  toggleMenu() {
+    this.menuOpen = !this.menuOpen;
+  }
+  
+  closeMenu() {
+    this.menuOpen = false;
+  }
+  
   onLogout () {
     localStorage.clear();
     window.location.reload();
   }
-
-
-  // Login () {
-  //   window.location.href = '/login';
-  // }
-
-  // Register () {
-  //   window.location.href = '/register';
-  // }
 }

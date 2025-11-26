@@ -31,6 +31,17 @@
   font-weight: 600;
   transition: color 0.3s ease;
   cursor: pointer;
+  position: relative;
+}
+
+.navLi a:hover {
+  color: #888;
+}
+
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 30px;            
 }
 
 .navbar-icons {
@@ -90,4 +101,70 @@
   background: var(--color-text);
   bottom: -2px;
   left: 0;
+}
+
+.menu-toggle {
+  display: none;  /* Visas bara på mobil i media query */
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  width: 28px;
+  height: 24px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.menu-toggle span {
+  display: block;
+  height: 2px;
+  width: 100%;
+  background: var(--color-text);
+  border-radius: 10px;
+}
+
+
+
+@media (max-width: 768px) {
+  .navbar {
+    padding: 0 16px;
+  }
+
+  .navbar-div {
+    height: 60px;
+  }
+
+  /* Visa hamburgaren på mobil */
+  .menu-toggle {
+    display: flex;
+  }
+
+  /* Nav-list döljs som standard på mobil */
+  .nav-list {
+    position: absolute;
+    top: 60px; /* strax under navbaren */
+    left: 0;
+    right: 0;
+    background: var(--color-bg);
+    flex-direction: column;
+    padding: 12px 24px 16px;
+    gap: 10px;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    display: none; /* default: dold */
+    z-index: 1000;
+  }
+
+  /* När menuOpen = true (class open) → visa menyn */
+  .nav-list.open {
+    display: flex;
+  }
+
+  .navLi {
+    margin-right: 0;
+  }
+
+  .navLi a {
+    font-size: 0.95rem;
+  }
 }

@@ -1,27 +1,94 @@
+.hero {
+  padding: 60px 16px 40px;
+}
+
+/* Container */
 .homeOne {
-  text-align: center;
-  margin-top: 65px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+  max-width: 1200px;
+  margin: 65px auto 0;
+}
+
+/* Vänster del: text */
+.home-firstsection {
+  flex: 1;
 }
 
 .home-firstsection h1 {
-  font-size: 48px;
-  margin-bottom: 20px;
+  font-size: clamp(2.2rem, 4vw, 3.2rem);
+  margin-bottom: 16px;
   font-weight: 500;
 }
 
+.hero-subtitle {
+  font-size: 0.95rem;
+  color: #666;
+  max-width: 420px;
+  margin-bottom: 24px;
+}
+
+/* Knapp */
 .home-firstsection button {
   background-color: var(--primary);
-  padding: 15px 50px;
-  font-size: 16px;
+  padding: 12px 32px;
+  font-size: 0.95rem;
   cursor: pointer;
-  border-radius: 5px;
+  border-radius: 999px;
+  border: none;
+  color: #fff;
+  font-weight: 500;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.2s ease;
+}
+
+.home-firstsection button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
+  background-color: #111; /* eller en mörkare variant av var(--primary) */
+}
+
+/* Höger del: bild */
+.home-image-wrapper {
+  flex: 1;
+  display: flex;
+  justify-content: center;
 }
 
 .homeOne-img {
-  margin-top: 50px;
   width: 100%;
-  height: 700px;
-  width: auto;
+  max-width: 520px;
+  height: 100%;
+  max-height: 520px;
   object-fit: cover;
-  border-radius: 7%;
+  border-radius: 16px;
+}
+
+/* Mobil / tablet */
+@media (max-width: 768px) {
+  .homeOne {
+    flex-direction: column;
+    text-align: center;
+    gap: 24px;
+  }
+
+  .home-firstsection {
+    order: 1;
+  }
+
+  .home-image-wrapper {
+    order: 2;
+  }
+
+  .hero-subtitle {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .homeOne-img {
+    max-width: 100%;
+    max-height: 380px;
+    border-radius: 12px;
+  }
 }
