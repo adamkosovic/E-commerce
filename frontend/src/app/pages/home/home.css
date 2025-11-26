@@ -39,14 +39,13 @@
   border-radius: 999px;
   border: none;
   color: #fff;
+  background-color: #000000;
   font-weight: 500;
   transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.2s ease;
 }
 
 .home-firstsection button:hover {
-  transform: translateY(-1px);
   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
-  background-color: #111; /* eller en mörkare variant av var(--primary) */
 }
 
 /* Höger del: bild */
