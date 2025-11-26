@@ -49,5 +49,12 @@ export class AuthService {
   getRole(): string | null {
     return localStorage.getItem('role');
   }
-  
+
+  isAdmin(): boolean {
+    return this.getRole() === 'admin';
+  }
+
+  isCustomer(): boolean {
+    return this.getRole() === 'customer';
+  }  
 }
