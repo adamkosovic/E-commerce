@@ -9,9 +9,72 @@
     </div>
 
     <!-- Admin: skapa ny produkt -->
-    <button class="add-button">
+    <button class="add-button" (click)="startCreate()">
       + Ny produkt
     </button>
+  </div>
+
+   <!-- FORMULÄR FÖR NY / REDIGERA -->
+   <div *ngIf="isCreating || isEditing" class="product-form">
+    <h2 class="form-title">
+      {{ isCreating ? 'Ny produkt' : 'Redigera produkt' }}
+    </h2>
+
+    <form (ngSubmit)="submitForm()">
+      <div class="form-row">
+        <label for="imageUrl">Bild URL</label>
+        <input
+          id="imageUrl"
+          type="text"
+          [(ngModel)]="formModel.imageUrl"
+          name="imageUrl"
+          required
+        />
+      </div>
+
+      <div class="form-row">
+        <label for="title">Titel</label>
+        <input
+          id="title"
+          type="text"
+          [(ngModel)]="formModel.title"
+          name="title"
+          required
+        />
+      </div>
+
+      <div class="form-row">
+        <label for="description">Beskrivning</label>
+        <textarea
+          id="description"
+          rows="3"
+          [(ngModel)]="formModel.description"
+          name="description"
+        ></textarea>
+      </div>
+
+      <div class="form-row">
+        <label for="price">Pris (SEK)</label>
+        <input
+          id="price"
+          type="number"
+          min="0"
+          step="1"
+          [(ngModel)]="formModel.price"
+          name="price"
+          required
+        />
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn-primary">
+          {{ isCreating ? 'Skapa produkt' : 'Spara ändringar' }}
+        </button>
+        <button type="button" class="btn-secondary" (click)="cancelForm()">
+          Avbryt
+        </button>
+      </div>
+    </form>
   </div>
 
   @if (products$ | async; as products) {
@@ -20,6 +83,7 @@
       <div class="product-list">
         @for (p of products; track p.id) {
           <article class="product-card">
+            <img class="product-image" [src]="p.imageUrl" alt="{{ p.title }}" />
             <div class="product-main">
               <h3 class="product-title">
                 <a>{{ p.title }}</a>
@@ -34,8 +98,8 @@
 
               <!-- Admin-actions -->
               <div class="admin-actions">
-                <button class="btn-small">Redigera</button>
-                <button class="btn-small btn-danger">Ta bort</button>
+                <button class="btn-small" (click)="startEdit(p)">Redigera</button>
+                <button class="btn-small btn-danger" (click)="delete(p)">Ta bort</button>
               </div>
             </div>
           </article>
