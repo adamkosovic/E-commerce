@@ -8,7 +8,7 @@ import { Stories } from './pages/stories/stories'; // Example additional compone
 import { ProductDetailComponent } from './components/product-detail/product-detail';
 import { Login } from './pages/login/login';
 import { Register } from './pages/register/register';
-
+import { AdminGuard } from './guards/admin.guard';
 
 
 export const routes: Routes = [
@@ -19,6 +19,7 @@ export const routes: Routes = [
   { path: 'about', component: About, title: 'About' },
   { path: 'login', component: Login, title: 'Login' },
   { path: 'register', component: Register, title: 'Register' },
+  { path: 'admin/products', component: AdminproductsComponent, canActivate: [AdminGuard] , title: 'Admin Products' },
   { path: 'yourCart', loadChildren: () => import('./pages/payment/your-cart/your-cart').then(m => m.YourCart), title: 'Your Cart' }, 
   { path: '**', redirectTo: '' } // Wildcard route for a 404 page
 ];
