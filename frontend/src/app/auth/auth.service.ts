@@ -51,10 +51,10 @@ export class AuthService {
   }
 
   isAdmin(): boolean {
-    return this.getRole() === 'admin';
+    return this.getRole() === 'Admin';
   }
 
   isCustomer(): boolean {
-    return this.getRole() === 'customer';
+    return this.getRole() === 'Customer';
   }  
 }

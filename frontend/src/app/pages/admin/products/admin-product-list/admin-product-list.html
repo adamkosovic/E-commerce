@@ -1,0 +1,53 @@
+<div class="admin-products">
+
+  <div class="admin-header">
+    <div>
+      <h1>Produkterna</h1>
+      <p class="admin-subtitle">
+        Hantera katalogen – lägg till, uppdatera och ta bort produkter.
+      </p>
+    </div>
+
+    <!-- Admin: skapa ny produkt -->
+    <button class="add-button">
+      + Ny produkt
+    </button>
+  </div>
+
+  @if (products$ | async; as products) {
+    @if (products.length > 0) {
+
+      <div class="product-list">
+        @for (p of products; track p.id) {
+          <article class="product-card">
+            <div class="product-main">
+              <h3 class="product-title">
+                <a>{{ p.title }}</a>
+              </h3>
+              <p class="product-desc">{{ p.description }}</p>
+            </div>
+
+            <div class="product-meta">
+              <strong class="product-price">
+                {{ p.price | currency:'SEK':'symbol-narrow' }}
+              </strong>
+
+              <!-- Admin-actions -->
+              <div class="admin-actions">
+                <button class="btn-small">Redigera</button>
+                <button class="btn-small btn-danger">Ta bort</button>
+              </div>
+            </div>
+          </article>
+        }
+      </div>
+
+    } @else {
+      <p>Inga produkter hittades.</p>
+    }
+  } @else {
+    <p>Laddar produkter…</p>
+  }
+</div>
+
+

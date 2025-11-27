@@ -1,0 +1,154 @@
+/* --- Container --- */
+.admin-products {
+  max-width: 1100px;
+  margin: 40px auto;
+  padding: 0 16px;
+  font-family: inherit;
+}
+
+/* --- Header --- */
+.admin-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  gap: 16px;
+}
+
+.admin-header h1 {
+  margin: 0;
+  font-size: 1.9rem;
+  font-weight: 600;
+  color: #111;
+}
+
+.admin-subtitle {
+  margin-top: 4px;
+  font-size: 0.95rem;
+  color: #666;
+}
+
+/* --- Add Product button --- */
+.add-button {
+  background-color: var(--primary, #111);
+  color: #fff;
+  border: none;
+  padding: 10px 22px;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: 0.2s ease;
+}
+
+.add-button:hover {
+  opacity: 0.85;
+}
+
+/* --- Product list grid --- */
+.product-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 18px;
+  margin-top: 20px;
+}
+
+/* --- Product card --- */
+.product-card {
+  background: #fff;
+  padding: 18px 16px;
+  border-radius: 12px;
+  border: 1px solid #e6e6e6;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 180px;
+  transition: box-shadow 0.15s ease;
+}
+
+.product-card:hover {
+  box-shadow: 0 8px 20px rgba(0,0,0,0.07);
+}
+
+.product-title {
+  margin: 0;
+  margin-bottom: 6px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #111;
+}
+
+.product-title a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.product-desc {
+  margin: 0;
+  margin-bottom: 14px;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+/* --- Meta bottom row (price + actions) --- */
+.product-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.product-price {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111;
+}
+
+/* --- Admin Action Buttons --- */
+.admin-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-small {
+  font-size: 0.8rem;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background: #fafafa;
+  cursor: pointer;
+  transition: 0.15s ease;
+}
+
+.btn-small:hover {
+  background: #f0f0f0;
+}
+
+.btn-danger {
+  background: #ffe5e5;
+  border-color: #f3b5b5;
+  color: #b21818;
+}
+
+.btn-danger:hover {
+  background: #ffd4d4;
+}
+
+/* --- Loading & empty state --- */
+p {
+  font-size: 0.95rem;
+  color: #666;
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+  .admin-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .add-button {
+    width: 100%;
+    text-align: center;
+  }
+}
