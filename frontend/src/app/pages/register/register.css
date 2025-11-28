@@ -82,8 +82,6 @@ input[type="password"]:focus {
 
 .forgot-link {
   color: #6c63ff;
-  text-decoration: none;
-  transition: color 0.2s;
 }
 
 .forgot-link:hover {

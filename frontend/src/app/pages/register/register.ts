@@ -43,4 +43,8 @@ export class Register {
         )
         .subscribe();
     }
+
+    toLogin(){
+      this.router.navigate(['/login']);
+    }
 }

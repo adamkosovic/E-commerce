@@ -4,7 +4,6 @@ import { Navbar } from "./components/navbar/navbar";
 import { Component } from '@angular/core'; 
 import 'tslib'; 
 import { Footer } from './components/footer/footer';
-import { CategoryMenu } from './components/category-menu/category-menu';
 
 @Component({
   selector: 'app-root',

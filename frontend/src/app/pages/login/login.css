@@ -67,30 +67,6 @@ input[type="password"]:focus {
   outline: none;
 }
 
-/* Options-rad */
-.form-options {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 25px;
-  font-size: 14px;
-}
-
-.remember-label {
-  color: #555;
-}
-
-.forgot-link {
-  color: #6c63ff;
-  text-decoration: none;
-  transition: color 0.2s;
-}
-
-.forgot-link:hover {
-  color: #3a3d98;
-  cursor: pointer;
-}
-
 /* Knapp */
 .login-button {
   width: 100%;

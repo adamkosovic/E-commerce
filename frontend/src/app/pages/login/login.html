@@ -25,13 +25,6 @@
           required
         />
       </div>
-      <div class="form-options">
-        <label class="remember-label">
-          <input type="checkbox" id="rememberMe" name="rememberMe" />
-          Remember Me
-        </label>
-        <a href="#" class="forgot-link">Forgot Password?</a>
-      </div>
       <div>
         <button type="submit" class="login-button" [disabled]="loading">
           {{ loading ? 'Logging in...' : 'Login' }}
@@ -40,7 +33,7 @@
     </form>
   </div>
   <div>
-    <p>Or create an <a routerLink="/register" class="forgot-link">account</a></p>
+    <p>Or create an <a (click)="toRegister()" class="forgot-link">account</a></p>
   </div>
 </section>
 
