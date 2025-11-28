@@ -14,34 +14,17 @@
         <h5 class="pd-price">{{ product.price | currency:'SEK':'symbol-narrow' }}</h5>
         <p class="pd-desc">{{ product.description }}</p>
       </div>
-
-      <div class="pd-size">
-        <label class="pd-label" for="size">Storlek</label>
-        <div class="size-group" role="radiogroup" aria-label="Välj storlek">
-          <input type="radio" name="size" id="size-s" class="size-input" value="S">
-          <label class="size-pill" for="size-s">S</label>
-
-          <input type="radio" name="size" id="size-m" class="size-input" value="M" checked>
-          <label class="size-pill" for="size-m">M</label>
-
-          <input type="radio" name="size" id="size-l" class="size-input" value="L">
-          <label class="size-pill" for="size-l">L</label>
-
-          <input type="radio" name="size" id="size-xl" class="size-input" value="XL" disabled>
-          <label class="size-pill is-disabled" for="size-xl">XL</label>
-        </div>
-      </div>
-
       <div>
-        <button
-          class="btn btn-light"
-          type="button"
-          data-bs-toggle="offcanvas"
-          data-bs-target="#offcanvasRight"
-          aria-controls="offcanvasRight">
-          Lägg i kundvagn
+        <button 
+        class="btn-cta"
+        type="button"
+        data-bs-toggle="offcanvas"
+        data-bs-target="#offcanvasRight"
+        aria-controls="offcanvasRight">
+        Lägg i kundvagn
         </button>
-
+      </div>
+      <div>
         <div
           class="offcanvas offcanvas-end"
           tabindex="-1"
