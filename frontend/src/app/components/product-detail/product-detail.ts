@@ -5,6 +5,8 @@ import { Observable, of } from 'rxjs';
 import { catchError, switchMap, map, tap } from 'rxjs/operators';
 import { ProductService } from '../../product.service';
 import { Product } from '../../models/product/product.model';
+import { CartService } from '../../services/cart/cart.service';
+
 
 @Component({
   selector: 'app-product-detail',
@@ -21,6 +23,7 @@ export class ProductDetailComponent {
     private route: ActivatedRoute,
     private router: Router,
     private productService: ProductService,
+    private cartService: CartService
   ) {
     this.product$ = this.route.paramMap.pipe(
       map(params => params.get('id')),
@@ -37,5 +40,13 @@ export class ProductDetailComponent {
         );
       })
     );
+  }
+
+  addToCart(product: Product) {
+    this.cartService.addItem(product.id, 1);
+  }
+
+  goToCart() {
+    this.router.navigate(['/cart']);
   }
 }

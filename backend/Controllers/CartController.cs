@@ -31,6 +31,7 @@ namespace backend.Controllers
 
         // GET /cart
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<CartDto>> GetMyCart()
         {
             var uid = Getuid();

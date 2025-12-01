@@ -8,6 +8,8 @@ import { Login } from './pages/login/login';
 import { Register } from './pages/register/register';
 import { AdminGuard } from './guards/admin.guard';    
 import { AdminProductList } from './pages/admin/products/admin-product-list/admin-product-list';
+import { Cart } from './components/cart/cart';
+
 
 
 export const routes: Routes = [
@@ -17,6 +19,7 @@ export const routes: Routes = [
   { path: 'login', component: Login, title: 'Login' },
   { path: 'register', component: Register, title: 'Register' },
   { path: 'admin/products', component: AdminProductList, canActivate: [AdminGuard] , title: 'Admin Products' },
+  { path: 'cart', component: Cart , title: 'Shopping Cart' },
   { path: 'yourCart', loadChildren: () => import('./pages/payment/your-cart/your-cart').then(m => m.YourCart), title: 'Your Cart' }, 
   { path: '**', redirectTo: '' } // Wildcard route for a 404 page
 ];

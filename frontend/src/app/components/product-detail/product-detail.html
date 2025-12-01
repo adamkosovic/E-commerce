@@ -20,7 +20,8 @@
         type="button"
         data-bs-toggle="offcanvas"
         data-bs-target="#offcanvasRight"
-        aria-controls="offcanvasRight">
+        aria-controls="offcanvasRight"
+        (click)="addToCart(product)">
         Lägg i kundvagn
         </button>
       </div>
@@ -54,7 +55,8 @@
                 class="btn-dark-full"
                 type="button"
                 data-bs-dismiss="offcanvas"
-                aria-label="Close">
+                aria-label="Close"
+                (click)="goToCart()">
                 Visa kundvagn & Till kassan
               </button>
             </div>

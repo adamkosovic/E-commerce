@@ -1,0 +1,54 @@
+<div class="cart-container" *ngIf="cart$ | async as cart; else loading">
+  <h2 class="cart-title">Kundvagn</h2>
+
+  <div *ngIf="cart.items.length === 0" class="cart-empty">
+    <p>Din kundvagn är tom.</p>
+  </div>
+
+  <div *ngIf="cart.items.length > 0" class="cart-content">
+    <div class="table-wrapper">
+      <table class="cart-table">
+        <thead>
+          <tr>
+            <th>Produkt</th>
+            <th>Pris</th>
+            <th>Antal</th>
+            <th>Summa</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of cart.items">
+            <td class="cart-item-title">{{ item.title }}</td>
+            <td>{{ item.price | number:'1.2-2' }} kr</td>
+            <td class="cart-qty-cell">
+              <button class="btn-qty" (click)="decrease(item)">-</button>
+              <span class="cart-qty">{{ item.qty }}</span>
+              <button class="btn-qty" (click)="increase(item)">+</button>
+            </td>
+            <td>{{ (item.price * item.qty) | number:'1.2-2' }} kr</td>
+            <td>
+              <button class="btn-secondary" (click)="remove(item)">Ta bort</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="cart-summary">
+      <div class="cart-total-row">
+        <span class="cart-total-label">Total:</span>
+        <span class="cart-total-value">{{ toPrice(cart.totalMinor) }}</span>
+      </div>
+
+      <div class="cart-actions">
+        <button class="btn-secondary" (click)="clear()">Töm kundvagn</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #loading>
+  <p>Laddar kundvagn...</p>
+</ng-template>
+
