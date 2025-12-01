@@ -16,6 +16,8 @@ namespace backend.Data
         public DbSet<User> Users => Set<User>();
         public DbSet<Order> Orders => Set<Order>();
         public DbSet<OrderItem> OrderItems => Set<OrderItem>();
+        public DbSet<Cart> Carts {get; set;} = null!;
+        public DbSet<CartItem> CartItems {get; set;} = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -72,12 +74,31 @@ namespace backend.Data
                     .OnDelete(DeleteBehavior.Cascade);
             });
 
-            modelBuilder.Entity<OrderItem>(entity =>
+                        // Cart
+            modelBuilder.Entity<Cart>(entity =>
             {
-                entity.HasKey(oi => oi.Id);
-                entity.Property(oi => oi.Title)
-                    .IsRequired()
-                    .HasMaxLength(200);
+                entity.HasKey(c => c.Id);
+
+                // en kundvagn per user
+                entity.HasIndex(c => c.UserId)
+                      .IsUnique();
+
+                entity.HasMany(c => c.Items)
+                      .WithOne(i => i.Cart)
+                      .HasForeignKey(i => i.CartId)
+                      .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            // CartItem
+            modelBuilder.Entity<CartItem>(entity =>
+            {
+                entity.HasKey(ci => ci.Id);
+
+                // Koppling till Product (om dina modeller har navigation)
+                entity.HasOne(ci => ci.Product)
+                      .WithMany() // eller .WithMany(p => p.CartItems) om du har den navigationen
+                      .HasForeignKey(ci => ci.ProductId)
+                      .OnDelete(DeleteBehavior.Restrict);
             });
         }
     }
