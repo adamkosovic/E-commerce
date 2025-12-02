@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable, map } from 'rxjs';
 import { Product } from '../../../../models/product/product.model';
-import { ProductService, ProductPayload} from '../../../../product.service';
+import { ProductService, ProductPayload} from '../../../../services/product.service';
 import { CommonModule, AsyncPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ChangeDetectorRef } from '@angular/core';

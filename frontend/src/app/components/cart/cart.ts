@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CartService } from '../../services/cart/cart.service';
+import { CartService } from '../../services/cart.service';
 import { CartDto, CartItemDto } from '../../models/cart/cart.models';
 import { Observable } from 'rxjs';
 import { CommonModule, } from '@angular/common';

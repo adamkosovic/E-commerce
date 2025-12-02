@@ -3,9 +3,9 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { catchError, switchMap, map, tap } from 'rxjs/operators';
-import { ProductService } from '../../product.service';
+import { ProductService } from '../../services/product.service';
 import { Product } from '../../models/product/product.model';
-import { CartService } from '../../services/cart/cart.service';
+import { CartService } from '../../services/cart.service';
 
 
 @Component({

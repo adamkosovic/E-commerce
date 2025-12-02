@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, tap } from 'rxjs';
-import { CartDto } from '../../models/cart/cart.models';
+import { CartDto } from '../models/cart/cart.models';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../environments/enviroment';
-import { Product } from '../../models/product/product.model';
+import { environment } from '../../environments/enviroment';
+import { Product } from '../models/product/product.model';
 
 @Injectable({
   providedIn: 'root'
