@@ -43,7 +43,7 @@ export class ProductDetailComponent {
   }
 
   addToCart(product: Product) {
-    this.cartService.addItem(product.id, 1);
+    this.cartService.addItem(product, 1);
   }
 
   goToCart() {
