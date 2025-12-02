@@ -18,6 +18,7 @@ namespace backend.Data
         public DbSet<OrderItem> OrderItems => Set<OrderItem>();
         public DbSet<Cart> Carts {get; set;} = null!;
         public DbSet<CartItem> CartItems {get; set;} = null!;
+        public DbSet<FavoriteProduct> FavoriteProducts { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -99,6 +100,15 @@ namespace backend.Data
                       .WithMany() // eller .WithMany(p => p.CartItems) om du har den navigationen
                       .HasForeignKey(ci => ci.ProductId)
                       .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            // FavoriteProduct
+            modelBuilder.Entity<FavoriteProduct>(entity =>
+            {
+                entity.HasKey(fp => fp.Id);
+
+                entity.HasIndex(fp => new { fp.UserId, fp.ProductId })
+                    .IsUnique();
             });
         }
     }
