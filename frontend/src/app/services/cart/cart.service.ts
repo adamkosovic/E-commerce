@@ -56,7 +56,10 @@ export class CartService {
 
 
   private calculateTotalMinor(cart: CartDto): number {
-    return cart.items.reduce((sum, item) => sum + item.price * item.qty, 0);
+    return cart.items.reduce((sum, item) => 
+    sum + item.price * 100 * item.qty, 
+    0
+    );
   }
 
 
