@@ -20,7 +20,7 @@
 .product-card {
   background: #fff;
   border-radius: 14px;
-  border: 1px solid #e6e6e6;
+  border: 1px solid black;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -33,10 +33,30 @@
 }
 
 /* Bilddel */
+
+
+
 .product-image-wrapper {
   width: 100%;
-  aspect-ratio: 4 / 5;        /* snygg proportion */
+  aspect-ratio: 4 / 5;        
   overflow: hidden;
+  position: relative;
+}
+
+.favorite-button {
+  position: absolute;
+  top: 10px;      
+  right: 10px; 
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: 10;
+}
+
+.favorite-button img {
+  width: 28px;  
+  height: 28px;
 }
 
 .product-image {

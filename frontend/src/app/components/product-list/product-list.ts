@@ -6,6 +6,8 @@ import { ProductService } from '../../services/product.service';
 import { Product } from '../../models/product/product.model';
 import { FavoritesService } from '../../services/favorites.service';
 
+
+
 @Component({
   selector: 'app-product-list-component',
   standalone: true,

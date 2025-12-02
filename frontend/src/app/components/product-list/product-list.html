@@ -8,6 +8,15 @@
         @for (p of products; track p.id) {
           <article class="product-card">
             <div class="product-image-wrapper">
+
+              <button class="favorite-button" (click)="toggleFavorite(p.id)">
+                @if (isFavorite(p.id)) {
+                  <img src="assets/icons/heart-fill.svg" alt="heart">
+                } @else {
+                  <img src="assets/icons/heart.svg" alt="heart">
+                }
+              </button>
+              
               <img
                 class="product-image"
                 [src]="p.imageUrl"
@@ -17,9 +26,8 @@
 
             <div class="product-content">
               <h3 class="product-title">
-                <a [routerLink]="['/shop', p.id]">{{ p.title }}</a>
+                {{ p.title }}
               </h3>
-
               <p class="product-desc">
                 {{ p.description }}
               </p>
@@ -29,18 +37,9 @@
                   {{ p.price | currency:'SEK':'symbol-narrow' }}
                 </strong>
 
-                <button class="product-button">
+                <button class="product-button" [routerLink]="['/shop', p.id]">
                   Visa produkt
                 </button>
-                
-                <button class="favorite-button" (click)="toggleFavorite(p.id)">
-                  @if (isFavorite(p.id)) {
-                    ❤️ Gillad
-                  } @else {
-                    🤍 Gilla
-                  }
-                </button>
-
               </div>
             </div>
           </article>
