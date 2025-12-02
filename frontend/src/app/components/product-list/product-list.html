@@ -32,6 +32,15 @@
                 <button class="product-button">
                   Visa produkt
                 </button>
+                
+                <button class="favorite-button" (click)="toggleFavorite(p.id)">
+                  @if (isFavorite(p.id)) {
+                    ❤️ Gillad
+                  } @else {
+                    🤍 Gilla
+                  }
+                </button>
+
               </div>
             </div>
           </article>
