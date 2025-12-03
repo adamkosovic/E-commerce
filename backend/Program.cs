@@ -273,26 +273,26 @@ app.MapGet("/db-test", async (AppDbContext db) =>
     try
     {
         Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] /db-test called - testing database connection");
-        
+
         // Test connection
         var canConnect = await db.Database.CanConnectAsync();
         Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] Database can connect: {canConnect}");
-        
+
         if (!canConnect)
         {
-            return Results.Ok(new 
-            { 
+            return Results.Ok(new
+            {
                 connected = false,
                 error = "Cannot connect to database",
-                timestamp = DateTime.UtcNow 
+                timestamp = DateTime.UtcNow
             });
         }
-        
+
         // Check if tables exist
         var tablesExist = new Dictionary<string, bool>();
         var connection = db.Database.GetDbConnection();
         await connection.OpenAsync();
-        
+
         try
         {
             using var command = connection.CreateCommand();
@@ -303,14 +303,14 @@ app.MapGet("/db-test", async (AppDbContext db) =>
                 AND table_type = 'BASE TABLE'
                 ORDER BY table_name;
             ";
-            
+
             using var reader = await command.ExecuteReaderAsync();
             var existingTables = new List<string>();
             while (await reader.ReadAsync())
             {
                 existingTables.Add(reader.GetString(0));
             }
-            
+
             // Check which tables we expect exist
             tablesExist["Products"] = existingTables.Contains("Products");
             tablesExist["Users"] = existingTables.Contains("Users");
@@ -319,12 +319,12 @@ app.MapGet("/db-test", async (AppDbContext db) =>
             tablesExist["Carts"] = existingTables.Contains("Carts");
             tablesExist["CartItems"] = existingTables.Contains("CartItems");
             tablesExist["FavoriteProducts"] = existingTables.Contains("FavoriteProducts");
-            
+
             Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] Existing tables: {string.Join(", ", existingTables)}");
-            
+
             // Try to query products
             int productCount = -1;
-            string productError = null;
+            string? productError = null;
             try
             {
                 productCount = await db.Products.CountAsync();
@@ -341,7 +341,7 @@ app.MapGet("/db-test", async (AppDbContext db) =>
                 tables = tablesExist,
                 existingTables = existingTables,
                 productCount = productCount,
-                productError = productError,
+                productError = productError ?? "none",
                 timestamp = DateTime.UtcNow 
             });
         }
