@@ -13,15 +13,24 @@ using Microsoft.AspNetCore.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Railway sets PORT environment variable - configure to listen on IPv4 (0.0.0.0)
+// Railway sets PORT and HTTP_PORTS environment variables
+// .NET 9.0 automatically uses HTTP_PORTS if set, so we don't need to configure it manually
+// This avoids the "Overriding HTTP_PORTS" warning and lets Railway handle port binding
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 var httpPorts = Environment.GetEnvironmentVariable("HTTP_PORTS");
 Console.WriteLine($"PORT: {port}, HTTP_PORTS: {httpPorts}");
 
-// Explicitly bind to IPv4 (0.0.0.0) - Railway uses IPv4
-// Using * can cause .NET to bind to IPv6 only, which Railway can't reach
-builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
-Console.WriteLine($"Configured to listen on http://0.0.0.0:{port} (IPv4)");
+// Only configure URL if HTTP_PORTS is not set (for local development)
+if (string.IsNullOrEmpty(httpPorts))
+{
+    builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+    Console.WriteLine($"Configured to listen on http://0.0.0.0:{port} (HTTP_PORTS not set)");
+}
+else
+{
+    Console.WriteLine($"Using Railway's HTTP_PORTS configuration: {httpPorts}");
+    // Let .NET 9.0 automatically use HTTP_PORTS - don't override it
+}
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -151,9 +160,9 @@ app.Use(async (context, next) =>
     var userAgent = context.Request.Headers["User-Agent"].ToString();
     Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] {context.Request.Method} {context.Request.Path} from Origin: {origin}");
     Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] Headers - Access-Control-Request-Method: {context.Request.Headers["Access-Control-Request-Method"]}, Access-Control-Request-Headers: {context.Request.Headers["Access-Control-Request-Headers"]}");
-    
+
     await next();
-    
+
     // Log response headers
     Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] Response Status: {context.Response.StatusCode}");
     Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] Response Headers - Access-Control-Allow-Origin: {context.Response.Headers["Access-Control-Allow-Origin"]}");
