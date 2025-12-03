@@ -120,6 +120,13 @@ builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
 var app = builder.Build();
 
+// Add request logging for debugging
+app.Use(async (context, next) =>
+{
+    Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] {context.Request.Method} {context.Request.Path}");
+    await next();
+});
+
 // CORS must be the VERY FIRST middleware - before anything else
 app.UseCors("NgDev");
 
@@ -183,6 +190,25 @@ app.MapGet("/", () => Results.Ok(new { message = "API is running", timestamp = D
     .AllowAnonymous();
 
 app.MapControllers();
+
+// Run database migrations on startup
+try
+{
+    Console.WriteLine("Checking database connection and running migrations...");
+    using (var scope = app.Services.CreateScope())
+    {
+        var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        dbContext.Database.Migrate();
+        Console.WriteLine("Database migrations completed successfully.");
+    }
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"WARNING: Database migration failed: {ex.Message}");
+    Console.WriteLine("Application will continue, but database operations may fail.");
+    // Don't crash the app - let it start even if DB is unavailable
+    // This allows health checks to work even if DB is down
+}
 
 Console.WriteLine("Application starting...");
 Console.WriteLine($"Health endpoint available at: /health");
