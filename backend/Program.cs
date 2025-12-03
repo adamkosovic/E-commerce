@@ -14,7 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c => 
+builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new() { Title = "Backend API", Version = "v1" });
     c.AddSecurityDefinition("Bearer", new()
@@ -109,10 +109,15 @@ else
     app.UseHsts();
 }
 
-
-// CORS must be before UseHttpsRedirection and authentication
+// CORS must be very early in the pipeline, before any other middleware
 app.UseCors("NgDev");
-app.UseHttpsRedirection();
+
+// Only use HTTPS redirection in development (Railway handles HTTPS in production)
+if (app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
+
 app.UseAuthentication();
 app.UseAuthorization();
 
