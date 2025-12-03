@@ -8,6 +8,7 @@ using System.Text;
 using backend.Services;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Hosting;
+using backend.Filters;
 
 
 
@@ -34,7 +35,11 @@ else
     Console.WriteLine($"Configured to listen on http://0.0.0.0:{port} (local development, HTTP_PORTS not set)");
 }
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    // Add global filter to ensure CORS headers are always present
+    options.Filters.Add(new CorsHeaderFilter());
+});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -170,7 +175,7 @@ app.Use(async (context, next) =>
 
     // Determine which origin to allow (use actual origin if it matches, otherwise use *)
     var allowedOrigin = "*";
-    if (!string.IsNullOrEmpty(origin) && 
+    if (!string.IsNullOrEmpty(origin) &&
         (origin.Contains("netlify.app") || origin.Contains("localhost:4200")))
     {
         allowedOrigin = origin;
