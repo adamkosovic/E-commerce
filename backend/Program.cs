@@ -196,9 +196,13 @@ app.Use(async (context, next) =>
     Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] Response Status: {context.Response.StatusCode}");
     Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] CORS Headers - Allow-Origin: {corsOrigin}, Allow-Methods: {corsMethods}, Allow-Headers: {corsHeaders}");
 
-    if (string.IsNullOrEmpty(corsOrigin) && !string.IsNullOrEmpty(origin))
+    // FALLBACK: If CORS headers are missing, add them manually
+    if (string.IsNullOrEmpty(corsOrigin) && !string.IsNullOrEmpty(origin) && !context.Response.HasStarted)
     {
-        Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] WARNING: CORS header missing! Origin was: {origin}");
+        Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] WARNING: CORS header missing! Adding manually. Origin was: {origin}");
+        context.Response.Headers["Access-Control-Allow-Origin"] = "*";
+        context.Response.Headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS";
+        context.Response.Headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization";
     }
 });
 
@@ -217,6 +221,9 @@ if (app.Environment.IsDevelopment())
 {
     app.UseHttpsRedirection();
 }
+
+// Map endpoints before authentication/authorization
+app.UseEndpoints(endpoints => { });
 
 // Skip authentication/authorization for OPTIONS (CORS preflight) and health checks
 app.UseWhen(context =>
