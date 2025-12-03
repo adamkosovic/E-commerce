@@ -46,24 +46,26 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
     opt.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
 
 // CORS - Tillåt Angular dev-servern och Netlify
+// CRITICAL: SetIsOriginAllowed() does NOT work with AllowCredentials()
+// When using AllowCredentials(), you MUST use WithOrigins() with explicit origins
+var allowedOrigins = new List<string>
+{
+    "http://localhost:4200",
+    "https://localhost:4200",
+    "https://mellow-griffin-feb028.netlify.app"
+};
+
+// Add additional origins from configuration (semicolon-separated)
+var additionalOrigins = builder.Configuration["CORS:AllowedOrigins"];
+if (!string.IsNullOrEmpty(additionalOrigins))
+{
+    allowedOrigins.AddRange(additionalOrigins.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries));
+}
+
 builder.Services.AddCors(o =>
 {
     o.AddPolicy("NgDev", p => p
-        .SetIsOriginAllowed(origin => 
-        {
-            if (string.IsNullOrEmpty(origin)) return false;
-            // Allow localhost for development
-            if (origin.StartsWith("http://localhost:") || origin.StartsWith("https://localhost:"))
-                return true;
-            // Allow all Netlify deployments
-            if (origin.EndsWith(".netlify.app"))
-                return true;
-            // Allow specific Netlify URL if configured
-            var allowedNetlifyUrl = builder.Configuration["AllowedOrigins:Netlify"];
-            if (!string.IsNullOrEmpty(allowedNetlifyUrl) && origin == allowedNetlifyUrl)
-                return true;
-            return false;
-        })
+        .WithOrigins(allowedOrigins.ToArray())
         .AllowAnyHeader()
         .AllowAnyMethod()
         .AllowCredentials());
@@ -108,8 +110,9 @@ else
 }
 
 
+// CORS must be before UseHttpsRedirection and authentication
+app.UseCors("NgDev");
 app.UseHttpsRedirection();
-app.UseCors("NgDev");  // Aktivera CORS i dev miljö (ofarligt även i prod om origin matchar)
 app.UseAuthentication();
 app.UseAuthorization();
 
