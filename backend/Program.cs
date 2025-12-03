@@ -152,8 +152,20 @@ else
 }
 
 // Simple health check endpoint - map before controllers
-app.MapGet("/health", () => new { status = "ok", timestamp = DateTime.UtcNow })
-    .AllowAnonymous();
+// Railway uses this for health checks
+app.MapGet("/health", () => 
+{
+    try
+    {
+        return Results.Ok(new { status = "ok", timestamp = DateTime.UtcNow });
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem($"Health check failed: {ex.Message}");
+    }
+})
+.Produces(200)
+.AllowAnonymous();
 
 app.MapControllers();
 
