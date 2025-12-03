@@ -113,6 +113,11 @@ builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
 var app = builder.Build();
 
+// Map health endpoint FIRST - before any middleware that could block it
+app.MapGet("/health", () => Results.Ok(new { status = "ok", timestamp = DateTime.UtcNow }))
+    .WithName("health")
+    .AllowAnonymous();
+
 // CORS must be the VERY FIRST middleware - before anything else
 app.UseCors("NgDev");
 
@@ -144,22 +149,6 @@ app.UseAuthorization();
 // app.UseDefaultFiles();     
 // app.UseStaticFiles();
 // app.MapFallbackToFile("index.html");
-
-// Simple health check endpoint - map before controllers
-// Railway uses this for health checks
-app.MapGet("/health", () =>
-{
-    try
-    {
-        return Results.Ok(new { status = "ok", timestamp = DateTime.UtcNow });
-    }
-    catch (Exception ex)
-    {
-        return Results.Problem($"Health check failed: {ex.Message}");
-    }
-})
-.Produces(200)
-.AllowAnonymous();
 
 app.MapControllers();
 
