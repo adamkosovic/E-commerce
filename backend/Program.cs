@@ -20,14 +20,21 @@ var listenPort = !string.IsNullOrEmpty(httpPorts) ? httpPorts : port;
 
 Console.WriteLine($"HTTP_PORTS: {httpPorts}, PORT: {port}, Using port: {listenPort}");
 
+// Validate and parse the port number before configuring Kestrel
+if (!int.TryParse(listenPort, out int portNumber) || portNumber < 1 || portNumber > 65535)
+{
+    Console.WriteLine($"ERROR: Invalid port value '{listenPort}'. Must be a number between 1 and 65535. Using default port 8080.");
+    portNumber = 8080;
+    listenPort = "8080";
+}
+
 // Explicitly configure Kestrel to listen on the correct port and IPv4 interface
 // Railway uses IPv4, so bind to 0.0.0.0 (not [::] which is IPv6)
 builder.WebHost.ConfigureKestrel(options =>
 {
-    options.Listen(System.Net.IPAddress.Any, int.Parse(listenPort));
-    Console.WriteLine($"Kestrel configured to listen on 0.0.0.0:{listenPort} (IPv4)");
+    options.Listen(System.Net.IPAddress.Any, portNumber);
+    Console.WriteLine($"Kestrel configured to listen on 0.0.0.0:{portNumber} (IPv4)");
 });
-
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
