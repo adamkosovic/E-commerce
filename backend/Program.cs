@@ -103,13 +103,18 @@ if (!string.IsNullOrEmpty(additionalOrigins))
 
 builder.Services.AddCors(o =>
 {
-    // TEMPORARY: Allow all origins for testing - will restrict after confirming CORS works
+    // Use explicit origins for better compatibility
     o.AddPolicy("NgDev", p => p
-        .AllowAnyOrigin()  // Temporarily allow all origins
+        .WithOrigins(
+            "http://localhost:4200",
+            "https://localhost:4200",
+            "https://mellow-griffin-feb028.netlify.app",
+            "https://*.netlify.app"  // Allow all Netlify preview deployments
+        )
         .AllowAnyHeader()
-        .AllowAnyMethod());
+        .AllowAnyMethod()
+        .SetIsOriginAllowedToAllowWildcardSubdomains());
     // No AllowCredentials() - JWT tokens are sent in Authorization header, not cookies
-    // Note: AllowAnyOrigin() cannot be used with AllowCredentials()
 });
 
 // Configure JWT authentication
@@ -282,9 +287,9 @@ app.MapGet("/healthz", () =>
 app.MapGet("/", (HttpContext context) =>
 {
     var corsHeader = context.Response.Headers["Access-Control-Allow-Origin"].ToString();
-    return Results.Ok(new 
-    { 
-        message = "API is running", 
+    return Results.Ok(new
+    {
+        message = "API is running",
         timestamp = DateTime.UtcNow,
         corsHeader = corsHeader,
         hasCorsHeader = !string.IsNullOrEmpty(corsHeader)
