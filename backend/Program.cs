@@ -55,9 +55,9 @@ builder.Services.AddSwaggerGen(c =>
 
 // Configure DbContext with retry logic and lazy connection
 // Railway provides DATABASE_URL, but we can also use ConnectionStrings:Default from appsettings.json
-var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL") 
+var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL")
     ?? builder.Configuration.GetConnectionString("Default");
-    
+
 if (string.IsNullOrEmpty(connectionString))
 {
     Console.WriteLine("WARNING: No database connection string found. Database operations will fail.");
@@ -193,25 +193,26 @@ app.MapMethods("/{*path}", new[] { "OPTIONS" }, () => Results.Ok())
 
 // Map health endpoint - must be accessible without any dependencies
 // This endpoint should NEVER fail, even if database is down
+// Railway uses this for health checks
 app.MapGet("/health", () =>
 {
-    try
+    Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] Health check called - returning OK");
+    return Results.Ok(new
     {
-        Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] Health check called");
-        return Results.Ok(new
-        {
-            status = "ok",
-            timestamp = DateTime.UtcNow,
-            uptime = "healthy"
-        });
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"Health check error: {ex.Message}");
-        return Results.Ok(new { status = "ok", timestamp = DateTime.UtcNow });
-    }
+        status = "ok",
+        timestamp = DateTime.UtcNow,
+        uptime = "healthy"
+    });
 })
 .WithName("health")
+.AllowAnonymous();
+
+// Also map /healthz (common health check path)
+app.MapGet("/healthz", () =>
+{
+    Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] Healthz check called - returning OK");
+    return Results.Ok(new { status = "ok" });
+})
 .AllowAnonymous();
 
 // Also add root endpoint for testing
