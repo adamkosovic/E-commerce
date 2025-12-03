@@ -12,6 +12,16 @@ using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Clear ASPNETCORE_URLS if Railway sets it incorrectly (may contain ${PORT} literal)
+// We'll configure Kestrel directly instead
+var aspnetcoreUrls = Environment.GetEnvironmentVariable("ASPNETCORE_URLS");
+if (!string.IsNullOrEmpty(aspnetcoreUrls))
+{
+    Console.WriteLine($"ASPNETCORE_URLS was set to: {aspnetcoreUrls}");
+    Environment.SetEnvironmentVariable("ASPNETCORE_URLS", null);
+    Console.WriteLine("ASPNETCORE_URLS cleared - using Kestrel configuration instead");
+}
+
 // Railway sets PORT environment variable (e.g., "8080")
 // HTTP_PORTS might be empty, so use PORT as fallback
 var httpPorts = Environment.GetEnvironmentVariable("HTTP_PORTS");
@@ -254,6 +264,31 @@ app.MapGet("/api-test", () =>
 {
     Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] /api-test called");
     return Results.Ok(new { message = "API is responding", timestamp = DateTime.UtcNow });
+})
+.AllowAnonymous();
+
+// Database connectivity test endpoint
+app.MapGet("/db-test", async (AppDbContext db) =>
+{
+    try
+    {
+        Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] /db-test called - testing database connection");
+        // Simple query to test connection
+        var canConnect = await db.Database.CanConnectAsync();
+        var productCount = canConnect ? await db.Products.CountAsync() : -1;
+        Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] Database connection test: CanConnect={canConnect}, ProductCount={productCount}");
+        return Results.Ok(new 
+        { 
+            connected = canConnect, 
+            productCount = productCount,
+            timestamp = DateTime.UtcNow 
+        });
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] Database connection test failed: {ex.Message}");
+        return Results.Problem(detail: ex.Message, statusCode: 500);
+    }
 })
 .AllowAnonymous();
 
