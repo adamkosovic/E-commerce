@@ -138,6 +138,23 @@ var app = builder.Build();
 app.UseRouting();
 
 // CORS middleware - MUST be before UseAuthentication/UseAuthorization
+
+// Handle OPTIONS preflight requests IMMEDIATELY - before CORS middleware
+app.Use(async (context, next) =>
+{
+    if (context.Request.Method == "OPTIONS")
+    {
+        // Add CORS headers for OPTIONS request
+        var origin = context.Request.Headers["Origin"].ToString();
+        context.Response.Headers["Access-Control-Allow-Origin"] = string.IsNullOrEmpty(origin) ? "*" : origin;
+        context.Response.Headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS, PATCH";
+        context.Response.Headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, X-Requested-With";
+        context.Response.StatusCode = 200;
+        await context.Response.WriteAsync("");
+        return;
+    }
+    await next();
+});
 app.UseCors();
 
 if (app.Environment.IsDevelopment())
