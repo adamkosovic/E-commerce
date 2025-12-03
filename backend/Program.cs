@@ -273,20 +273,87 @@ app.MapGet("/db-test", async (AppDbContext db) =>
     try
     {
         Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] /db-test called - testing database connection");
-        // Simple query to test connection
+        
+        // Test connection
         var canConnect = await db.Database.CanConnectAsync();
-        var productCount = canConnect ? await db.Products.CountAsync() : -1;
-        Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] Database connection test: CanConnect={canConnect}, ProductCount={productCount}");
-        return Results.Ok(new
+        Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] Database can connect: {canConnect}");
+        
+        if (!canConnect)
         {
-            connected = canConnect,
-            productCount = productCount,
-            timestamp = DateTime.UtcNow
-        });
+            return Results.Ok(new 
+            { 
+                connected = false,
+                error = "Cannot connect to database",
+                timestamp = DateTime.UtcNow 
+            });
+        }
+        
+        // Check if tables exist
+        var tablesExist = new Dictionary<string, bool>();
+        var connection = db.Database.GetDbConnection();
+        await connection.OpenAsync();
+        
+        try
+        {
+            using var command = connection.CreateCommand();
+            command.CommandText = @"
+                SELECT table_name 
+                FROM information_schema.tables 
+                WHERE table_schema = 'public' 
+                AND table_type = 'BASE TABLE'
+                ORDER BY table_name;
+            ";
+            
+            using var reader = await command.ExecuteReaderAsync();
+            var existingTables = new List<string>();
+            while (await reader.ReadAsync())
+            {
+                existingTables.Add(reader.GetString(0));
+            }
+            
+            // Check which tables we expect exist
+            tablesExist["Products"] = existingTables.Contains("Products");
+            tablesExist["Users"] = existingTables.Contains("Users");
+            tablesExist["Orders"] = existingTables.Contains("Orders");
+            tablesExist["OrderItems"] = existingTables.Contains("OrderItems");
+            tablesExist["Carts"] = existingTables.Contains("Carts");
+            tablesExist["CartItems"] = existingTables.Contains("CartItems");
+            tablesExist["FavoriteProducts"] = existingTables.Contains("FavoriteProducts");
+            
+            Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] Existing tables: {string.Join(", ", existingTables)}");
+            
+            // Try to query products
+            int productCount = -1;
+            string productError = null;
+            try
+            {
+                productCount = await db.Products.CountAsync();
+            }
+            catch (Exception ex)
+            {
+                productError = ex.Message;
+                Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] Error querying Products: {ex.Message}");
+            }
+            
+            return Results.Ok(new 
+            { 
+                connected = true,
+                tables = tablesExist,
+                existingTables = existingTables,
+                productCount = productCount,
+                productError = productError,
+                timestamp = DateTime.UtcNow 
+            });
+        }
+        finally
+        {
+            await connection.CloseAsync();
+        }
     }
     catch (Exception ex)
     {
         Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] Database connection test failed: {ex.Message}");
+        Console.WriteLine($"Stack trace: {ex.StackTrace}");
         return Results.Problem(detail: ex.Message, statusCode: 500);
     }
 })
@@ -321,11 +388,11 @@ _ = Task.Run(async () =>
         using (var scope = app.Services.CreateScope())
         {
             var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-            
+
             // Check if database can connect first
             var canConnect = await dbContext.Database.CanConnectAsync();
             Console.WriteLine($"Database can connect: {canConnect}");
-            
+
             if (canConnect)
             {
                 // Get pending migrations
@@ -336,7 +403,7 @@ _ = Task.Run(async () =>
                 {
                     Console.WriteLine($"Migrations to apply: {string.Join(", ", pendingList)}");
                 }
-                
+
                 // Apply migrations
                 await dbContext.Database.MigrateAsync();
                 Console.WriteLine("Database migrations completed successfully.");
