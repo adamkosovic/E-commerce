@@ -45,13 +45,28 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddDbContext<AppDbContext>(opt =>
     opt.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
 
-// CORS - Tillåt Angular dev-servern
+// CORS - Tillåt Angular dev-servern och Netlify
 builder.Services.AddCors(o =>
 {
     o.AddPolicy("NgDev", p => p
-        .WithOrigins("http://localhost:4200", "https://mellow-griffin-feb028.netlify.app")
+        .SetIsOriginAllowed(origin => 
+        {
+            if (string.IsNullOrEmpty(origin)) return false;
+            // Allow localhost for development
+            if (origin.StartsWith("http://localhost:") || origin.StartsWith("https://localhost:"))
+                return true;
+            // Allow all Netlify deployments
+            if (origin.EndsWith(".netlify.app"))
+                return true;
+            // Allow specific Netlify URL if configured
+            var allowedNetlifyUrl = builder.Configuration["AllowedOrigins:Netlify"];
+            if (!string.IsNullOrEmpty(allowedNetlifyUrl) && origin == allowedNetlifyUrl)
+                return true;
+            return false;
+        })
         .AllowAnyHeader()
-        .AllowAnyMethod());
+        .AllowAnyMethod()
+        .AllowCredentials());
 });
 
 var jwt = builder.Configuration.GetSection("Jwt");

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, tap } from 'rxjs';
 import { CartDto } from '../models/cart/cart.models';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../environments/enviroment';
+import { environment } from '../../environments/environment';
 import { Product } from '../models/product/product.model';
 
 @Injectable({
