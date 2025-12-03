@@ -154,10 +154,19 @@ app.UseCors();
 // Log all incoming requests for debugging
 app.Use(async (context, next) =>
 {
-    var origin = context.Request.Headers["Origin"].ToString();
-    Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] {context.Request.Method} {context.Request.Path} from Origin: {origin}");
-    await next();
-    Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] Response: {context.Response.StatusCode} for {context.Request.Method} {context.Request.Path}");
+    try
+    {
+        var origin = context.Request.Headers["Origin"].ToString();
+        Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] {context.Request.Method} {context.Request.Path} from Origin: {origin}");
+        await next();
+        Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] Response: {context.Response.StatusCode} for {context.Request.Method} {context.Request.Path}");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] EXCEPTION in middleware: {ex.Message}");
+        Console.WriteLine($"Stack trace: {ex.StackTrace}");
+        throw; // Re-throw to let error handling middleware handle it
+    }
 });
 if (app.Environment.IsDevelopment())
 {
@@ -240,9 +249,17 @@ app.MapGet("/", (HttpContext context) =>
 })
 .AllowAnonymous();
 
+// Simple test endpoint that doesn't require database
+app.MapGet("/api-test", () =>
+{
+    Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] /api-test called");
+    return Results.Ok(new { message = "API is responding", timestamp = DateTime.UtcNow });
+})
+.AllowAnonymous();
+
 app.MapControllers();
 
-// Test endpoint to verify routing works
+// Test endpoint to verify routing works (with database)
 app.MapGet("/test-products", async (AppDbContext db) =>
 {
     try
@@ -253,7 +270,8 @@ app.MapGet("/test-products", async (AppDbContext db) =>
     catch (Exception ex)
     {
         Console.WriteLine($"Error in test endpoint: {ex.Message}");
-        return Results.Problem(ex.Message);
+        Console.WriteLine($"Stack trace: {ex.StackTrace}");
+        return Results.Problem(detail: ex.Message, statusCode: 500);
     }
 })
 .AllowAnonymous();

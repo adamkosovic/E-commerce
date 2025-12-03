@@ -20,13 +20,16 @@ public class ProductsController : ControllerBase
   {
     try
     {
+      Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] GET /products called");
       var products = await _db.Products.ToListAsync();
+      Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] GET /products returning {products.Count} products");
       return Ok(products);
     }
     catch (Exception ex)
     {
-      Console.WriteLine($"Error getting products: {ex.Message}");
+      Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] ERROR in GET /products: {ex.Message}");
       Console.WriteLine($"Stack trace: {ex.StackTrace}");
+      // Return a proper HTTP response instead of crashing
       return StatusCode(500, new { error = "Failed to retrieve products", message = ex.Message });
     }
   }
