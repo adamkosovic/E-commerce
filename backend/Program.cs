@@ -63,12 +63,13 @@ if (!string.IsNullOrEmpty(additionalOrigins))
 
 builder.Services.AddCors(o =>
 {
+    // TEMPORARY: Allow all origins for testing - will restrict after confirming CORS works
     o.AddPolicy("NgDev", p => p
-        .WithOrigins(allowedOrigins.ToArray())
+        .AllowAnyOrigin()  // Temporarily allow all origins
         .AllowAnyHeader()
-        .AllowAnyMethod()
-        .SetPreflightMaxAge(TimeSpan.FromSeconds(3600))); // Cache preflight for 1 hour
+        .AllowAnyMethod());
     // No AllowCredentials() - JWT tokens are sent in Authorization header, not cookies
+    // Note: AllowAnyOrigin() cannot be used with AllowCredentials()
 });
 
 var jwt = builder.Configuration.GetSection("Jwt");
@@ -136,6 +137,10 @@ app.UseAuthorization();
 // app.MapFallbackToFile("index.html");
 
 app.MapControllers();
+
+// Simple health check endpoint
+app.MapGet("/health", () => new { status = "ok", timestamp = DateTime.UtcNow })
+    .AllowAnonymous();
 
 // Railway automatically sets PORT environment variable and handles port binding
 // No need to manually configure port - Railway does this automatically
