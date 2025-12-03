@@ -203,7 +203,7 @@ app.Use(async (context, next) =>
         // CORS headers already added, so error response will have them
         throw;
     }
-    
+
     Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] Response Status: {context.Response.StatusCode}");
 });
 
@@ -283,6 +283,22 @@ app.MapGet("/", () => Results.Ok(new { message = "API is running", timestamp = D
     .AllowAnonymous();
 
 app.MapControllers();
+
+// FINAL middleware - add CORS headers at the very end, after all routes
+app.Use(async (context, next) =>
+{
+    await next();
+    
+    // Ensure CORS headers are ALWAYS present, even if they weren't added earlier
+    if (!context.Response.Headers.ContainsKey("Access-Control-Allow-Origin"))
+    {
+        context.Response.Headers["Access-Control-Allow-Origin"] = "*";
+        context.Response.Headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS, PATCH";
+        context.Response.Headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, X-Requested-With";
+        context.Response.Headers["Access-Control-Allow-Credentials"] = "false";
+        Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] FINAL: Added CORS headers after all processing");
+    }
+});
 
 // Run database migrations on startup (non-blocking)
 _ = Task.Run(async () =>
