@@ -138,13 +138,13 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
 var app = builder.Build();
+
+// Enable routing first
+app.UseRouting();
+
 // CORS middleware - MUST be before UseAuthentication/UseAuthorization
 // This adds CORS headers to all responses
-app.UseCors();    }
-    await next();
-});
 app.UseCors();
-
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
