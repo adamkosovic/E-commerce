@@ -12,39 +12,22 @@ using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Clear ASPNETCORE_URLS if Railway sets it incorrectly (may contain ${PORT} literal)
-// We'll configure Kestrel directly instead
+// Railway sets PORT environment variable (e.g., "8080")
+// .NET 9.0 automatically uses HTTP_PORTS or PORT if ASPNETCORE_URLS is not set
+// Clear ASPNETCORE_URLS to let .NET handle port binding automatically
 var aspnetcoreUrls = Environment.GetEnvironmentVariable("ASPNETCORE_URLS");
 if (!string.IsNullOrEmpty(aspnetcoreUrls))
 {
     Console.WriteLine($"ASPNETCORE_URLS was set to: {aspnetcoreUrls}");
     Environment.SetEnvironmentVariable("ASPNETCORE_URLS", null);
-    Console.WriteLine("ASPNETCORE_URLS cleared - using Kestrel configuration instead");
+    Console.WriteLine("ASPNETCORE_URLS cleared - .NET will use HTTP_PORTS/PORT automatically");
 }
 
-// Railway sets PORT environment variable (e.g., "8080")
-// HTTP_PORTS might be empty, so use PORT as fallback
+// Log port configuration for debugging
 var httpPorts = Environment.GetEnvironmentVariable("HTTP_PORTS");
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
-var listenPort = !string.IsNullOrEmpty(httpPorts) ? httpPorts : port;
-
-Console.WriteLine($"HTTP_PORTS: {httpPorts}, PORT: {port}, Using port: {listenPort}");
-
-// Validate and parse the port number before configuring Kestrel
-if (!int.TryParse(listenPort, out int portNumber) || portNumber < 1 || portNumber > 65535)
-{
-    Console.WriteLine($"ERROR: Invalid port value '{listenPort}'. Must be a number between 1 and 65535. Using default port 8080.");
-    portNumber = 8080;
-    listenPort = "8080";
-}
-
-// Configure Kestrel to listen on the correct port and IPv4 interface
-// Railway uses IPv4, so bind to 0.0.0.0 (not [::] which is IPv6)
-builder.WebHost.ConfigureKestrel(options =>
-{
-    options.Listen(System.Net.IPAddress.Any, portNumber);
-    Console.WriteLine($"Kestrel configured to listen on 0.0.0.0:{portNumber} (IPv4)");
-});
+Console.WriteLine($"HTTP_PORTS: {httpPorts ?? "(not set)"}, PORT: {port}");
+Console.WriteLine($".NET will automatically bind to port {port} on all interfaces (0.0.0.0)");
 
 builder.Services.AddControllers()
     .ConfigureApiBehaviorOptions(options =>
@@ -334,15 +317,15 @@ app.MapGet("/db-test", async (AppDbContext db) =>
                 productError = ex.Message;
                 Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] Error querying Products: {ex.Message}");
             }
-            
-            return Results.Ok(new 
-            { 
+
+            return Results.Ok(new
+            {
                 connected = true,
                 tables = tablesExist,
                 existingTables = existingTables,
                 productCount = productCount,
                 productError = productError ?? "none",
-                timestamp = DateTime.UtcNow 
+                timestamp = DateTime.UtcNow
             });
         }
         finally
