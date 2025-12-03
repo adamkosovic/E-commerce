@@ -54,8 +54,21 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 // Configure DbContext with retry logic and lazy connection
+// Railway provides DATABASE_URL, but we can also use ConnectionStrings:Default from appsettings.json
+var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL") 
+    ?? builder.Configuration.GetConnectionString("Default");
+    
+if (string.IsNullOrEmpty(connectionString))
+{
+    Console.WriteLine("WARNING: No database connection string found. Database operations will fail.");
+}
+else
+{
+    Console.WriteLine($"Database connection string configured (length: {connectionString.Length})");
+}
+
 builder.Services.AddDbContext<AppDbContext>(opt =>
-    opt.UseNpgsql(builder.Configuration.GetConnectionString("Default"),
+    opt.UseNpgsql(connectionString ?? "Host=localhost;Port=5432;Database=temp",
         npgsqlOptions => npgsqlOptions.EnableRetryOnFailure(
             maxRetryCount: 3,
             maxRetryDelay: TimeSpan.FromSeconds(5),
