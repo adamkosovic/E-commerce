@@ -25,7 +25,9 @@
                 "input": "public",
                 "output": "/"
               },
-              "src/assets"
+              "src/assets",
+              "src/favicon.ico",
+              "src/_redirects"
             ],
             "styles": [
               "src/styles.css"
