@@ -46,36 +46,28 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
     opt.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
 
 // CORS - Tillåt Angular dev-servern och Netlify
-// Since we're not using AllowCredentials(), we can use SetIsOriginAllowed for flexibility
+// Using explicit origins for maximum compatibility
+var allowedOrigins = new List<string>
+{
+    "http://localhost:4200",
+    "https://localhost:4200",
+    "https://mellow-griffin-feb028.netlify.app"
+};
+
+// Add additional origins from configuration (semicolon-separated)
+var additionalOrigins = builder.Configuration["CORS:AllowedOrigins"];
+if (!string.IsNullOrEmpty(additionalOrigins))
+{
+    allowedOrigins.AddRange(additionalOrigins.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries));
+}
+
 builder.Services.AddCors(o =>
 {
     o.AddPolicy("NgDev", p => p
-        .SetIsOriginAllowed(origin =>
-        {
-            if (string.IsNullOrEmpty(origin)) return false;
-            
-            // Allow localhost for development
-            if (origin.StartsWith("http://localhost:") || origin.StartsWith("https://localhost:"))
-                return true;
-            
-            // Allow all Netlify deployments
-            if (origin.EndsWith(".netlify.app"))
-                return true;
-            
-            // Allow specific origins from configuration
-            var allowedOrigins = builder.Configuration["CORS:AllowedOrigins"];
-            if (!string.IsNullOrEmpty(allowedOrigins))
-            {
-                var origins = allowedOrigins.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-                if (origins.Contains(origin))
-                    return true;
-            }
-            
-            return false;
-        })
+        .WithOrigins(allowedOrigins.ToArray())
         .AllowAnyHeader()
         .AllowAnyMethod());
-        // No AllowCredentials() - JWT tokens are sent in Authorization header, not cookies
+    // No AllowCredentials() - JWT tokens are sent in Authorization header, not cookies
 });
 
 var jwt = builder.Configuration.GetSection("Jwt");
@@ -106,18 +98,18 @@ builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
 var app = builder.Build();
 
+// CORS must be the VERY FIRST middleware - before anything else
+app.UseCors("NgDev");
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-else
+else 
 {
     app.UseHsts();
 }
-
-// CORS must be very early in the pipeline, before any other middleware
-app.UseCors("NgDev");
 
 // Only use HTTPS redirection in development (Railway handles HTTPS in production)
 if (app.Environment.IsDevelopment())
