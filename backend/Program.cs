@@ -222,9 +222,6 @@ if (app.Environment.IsDevelopment())
     app.UseHttpsRedirection();
 }
 
-// Map endpoints before authentication/authorization
-app.UseEndpoints(endpoints => { });
-
 // Skip authentication/authorization for OPTIONS (CORS preflight) and health checks
 app.UseWhen(context =>
     !context.Request.Path.StartsWithSegments("/health") &&
@@ -234,6 +231,8 @@ app.UseWhen(context =>
     appBuilder.UseAuthentication();
     appBuilder.UseAuthorization();
 });
+
+// Map endpoints (UseEndpoints is implicit in .NET 6+ with MapControllers/MapGet)
 
 
 // 🚧 Tillfälligt bortkommenterat under utveckling.
