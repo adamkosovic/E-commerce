@@ -18,8 +18,17 @@ public class ProductsController : ControllerBase
   [AllowAnonymous]
   public async Task<IActionResult> GetAll()
   {
-    var products = await _db.Products.ToListAsync();
-    return Ok(products);
+    try
+    {
+      var products = await _db.Products.ToListAsync();
+      return Ok(products);
+    }
+    catch (Exception ex)
+    {
+      Console.WriteLine($"Error getting products: {ex.Message}");
+      Console.WriteLine($"Stack trace: {ex.StackTrace}");
+      return StatusCode(500, new { error = "Failed to retrieve products", message = ex.Message });
+    }
   }
 
   //GET /products/{id}

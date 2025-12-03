@@ -161,9 +161,11 @@ if (app.Environment.IsDevelopment())
     app.UseHttpsRedirection();
 }
 
-// Skip authentication/authorization for OPTIONS (CORS preflight) and health checks
+// Skip authentication/authorization for OPTIONS (CORS preflight), health checks, and root
 app.UseWhen(context =>
     !context.Request.Path.StartsWithSegments("/health") &&
+    !context.Request.Path.StartsWithSegments("/healthz") &&
+    context.Request.Path != "/" &&
     context.Request.Method != "OPTIONS",
     appBuilder =>
 {
