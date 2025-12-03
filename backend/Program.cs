@@ -168,23 +168,31 @@ app.Use(async (context, next) =>
     var origin = context.Request.Headers["Origin"].ToString();
     Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] {context.Request.Method} {context.Request.Path} from Origin: {origin}");
 
+    // Determine which origin to allow (use actual origin if it matches, otherwise use *)
+    var allowedOrigin = "*";
+    if (!string.IsNullOrEmpty(origin) && 
+        (origin.Contains("netlify.app") || origin.Contains("localhost:4200")))
+    {
+        allowedOrigin = origin;
+    }
+
     // Add CORS headers IMMEDIATELY (not just in OnStarting)
-    context.Response.Headers["Access-Control-Allow-Origin"] = "*";
+    context.Response.Headers["Access-Control-Allow-Origin"] = allowedOrigin;
     context.Response.Headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS, PATCH";
     context.Response.Headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, X-Requested-With";
     context.Response.Headers["Access-Control-Allow-Credentials"] = "false";
-    Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] CORS headers added immediately");
+    Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] CORS headers added immediately - Origin: {allowedOrigin}");
 
     // Also use OnStarting as backup
     context.Response.OnStarting(() =>
     {
         if (!context.Response.Headers.ContainsKey("Access-Control-Allow-Origin"))
         {
-            context.Response.Headers["Access-Control-Allow-Origin"] = "*";
+            context.Response.Headers["Access-Control-Allow-Origin"] = allowedOrigin;
             context.Response.Headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS, PATCH";
             context.Response.Headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, X-Requested-With";
             context.Response.Headers["Access-Control-Allow-Credentials"] = "false";
-            Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] CORS headers added via OnStarting (backup)");
+            Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] CORS headers added via OnStarting (backup) - Origin: {allowedOrigin}");
         }
         return Task.CompletedTask;
     });
