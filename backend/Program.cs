@@ -167,6 +167,10 @@ app.UseWhen(context =>
 // app.UseStaticFiles();
 // app.MapFallbackToFile("index.html");
 
+// Handle OPTIONS requests explicitly for CORS preflight
+app.MapMethods("/{*path}", new[] { "OPTIONS" }, () => Results.Ok())
+    .AllowAnonymous();
+
 // Map health endpoint - must be accessible without any dependencies
 // This endpoint should NEVER fail, even if database is down
 app.MapGet("/health", () =>
