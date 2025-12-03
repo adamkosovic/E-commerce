@@ -157,28 +157,39 @@ app.UseRouting();
 // CORS middleware
 app.UseCors("NgDev");
 
-// Add CORS headers using OnStarting callback - ensures they're added right before response is sent
+// Add CORS headers IMMEDIATELY - before any processing
 app.Use(async (context, next) =>
 {
     var origin = context.Request.Headers["Origin"].ToString();
     Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] {context.Request.Method} {context.Request.Path} from Origin: {origin}");
 
-    // Use OnStarting to add CORS headers right before response is sent
+    // Add CORS headers IMMEDIATELY (not just in OnStarting)
+    context.Response.Headers["Access-Control-Allow-Origin"] = "*";
+    context.Response.Headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS, PATCH";
+    context.Response.Headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, X-Requested-With";
+    context.Response.Headers["Access-Control-Allow-Credentials"] = "false";
+    Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] CORS headers added immediately");
+
+    // Also use OnStarting as backup
     context.Response.OnStarting(() =>
     {
-        context.Response.Headers["Access-Control-Allow-Origin"] = "*";
-        context.Response.Headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS, PATCH";
-        context.Response.Headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, X-Requested-With";
-        context.Response.Headers["Access-Control-Allow-Credentials"] = "false";
-        Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] CORS headers added via OnStarting");
+        if (!context.Response.Headers.ContainsKey("Access-Control-Allow-Origin"))
+        {
+            context.Response.Headers["Access-Control-Allow-Origin"] = "*";
+            context.Response.Headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS, PATCH";
+            context.Response.Headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, X-Requested-With";
+            context.Response.Headers["Access-Control-Allow-Credentials"] = "false";
+            Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] CORS headers added via OnStarting (backup)");
+        }
         return Task.CompletedTask;
     });
 
-    // Handle OPTIONS preflight
+    // Handle OPTIONS preflight immediately
     if (context.Request.Method == "OPTIONS")
     {
         Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] OPTIONS preflight - returning 200");
         context.Response.StatusCode = 200;
+        await context.Response.WriteAsync("");
         return;
     }
 
@@ -189,9 +200,10 @@ app.Use(async (context, next) =>
     catch (Exception ex)
     {
         Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] Exception: {ex.Message}");
+        // CORS headers already added, so error response will have them
         throw;
     }
-
+    
     Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] Response Status: {context.Response.StatusCode}");
 });
 
