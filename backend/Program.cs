@@ -242,6 +242,22 @@ app.MapGet("/", (HttpContext context) =>
 
 app.MapControllers();
 
+// Test endpoint to verify routing works
+app.MapGet("/test-products", async (AppDbContext db) =>
+{
+    try
+    {
+        var products = await db.Products.ToListAsync();
+        return Results.Ok(products);
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error in test endpoint: {ex.Message}");
+        return Results.Problem(ex.Message);
+    }
+})
+.AllowAnonymous();
+
 // Run database migrations on startup (non-blocking)
 _ = Task.Run(async () =>
 {
