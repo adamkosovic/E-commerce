@@ -7,8 +7,6 @@ using backend.Models;
 using System.Text;
 using backend.Services;
 using System.Security.Claims;
-using Microsoft.AspNetCore.Hosting;
-using backend.Filters;
 
 
 
@@ -29,11 +27,7 @@ builder.WebHost.ConfigureKestrel(options =>
     Console.WriteLine($"Kestrel configured to listen on 0.0.0.0:{port} (IPv4)");
 });
 
-builder.Services.AddControllers(options =>
-{
-    // Add global filter to ensure CORS headers are always present
-    options.Filters.Add(new CorsHeaderFilter());
-});
+builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -84,36 +78,13 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
             maxRetryDelay: TimeSpan.FromSeconds(5),
             errorCodesToAdd: null)));
 
-// CORS - Tillåt Angular dev-servern och Netlify
-// Using explicit origins for maximum compatibility
-var allowedOrigins = new List<string>
-{
-    "http://localhost:4200",
-    "https://localhost:4200",
-    "https://mellow-griffin-feb028.netlify.app"
-};
-
-// Add additional origins from configuration (semicolon-separated)
-var additionalOrigins = builder.Configuration["CORS:AllowedOrigins"];
-if (!string.IsNullOrEmpty(additionalOrigins))
-{
-    allowedOrigins.AddRange(additionalOrigins.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries));
-}
-
+// CORS Configuration - Simple and reliable
 builder.Services.AddCors(o =>
 {
-    // Use explicit origins for better compatibility
-    o.AddPolicy("NgDev", p => p
-        .WithOrigins(
-            "http://localhost:4200",
-            "https://localhost:4200",
-            "https://mellow-griffin-feb028.netlify.app",
-            "https://*.netlify.app"  // Allow all Netlify preview deployments
-        )
+    o.AddDefaultPolicy(p => p
+        .AllowAnyOrigin()  // Allow all origins (no credentials needed for JWT in headers)
         .AllowAnyHeader()
-        .AllowAnyMethod()
-        .SetIsOriginAllowedToAllowWildcardSubdomains());
-    // No AllowCredentials() - JWT tokens are sent in Authorization header, not cookies
+        .AllowAnyMethod());
 });
 
 // Configure JWT authentication
@@ -158,66 +129,8 @@ var app = builder.Build();
 // Enable routing first
 app.UseRouting();
 
-// CORS middleware
-app.UseCors("NgDev");
-
-// Add CORS headers IMMEDIATELY - before any processing
-app.Use(async (context, next) =>
-{
-    var origin = context.Request.Headers["Origin"].ToString();
-    Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] {context.Request.Method} {context.Request.Path} from Origin: {origin}");
-
-    // Determine which origin to allow (use actual origin if it matches, otherwise use *)
-    var allowedOrigin = "*";
-    if (!string.IsNullOrEmpty(origin) &&
-        (origin.Contains("netlify.app") || origin.Contains("localhost:4200")))
-    {
-        allowedOrigin = origin;
-    }
-
-    // Add CORS headers IMMEDIATELY (not just in OnStarting)
-    context.Response.Headers["Access-Control-Allow-Origin"] = allowedOrigin;
-    context.Response.Headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS, PATCH";
-    context.Response.Headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, X-Requested-With";
-    context.Response.Headers["Access-Control-Allow-Credentials"] = "false";
-    Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] CORS headers added immediately - Origin: {allowedOrigin}");
-
-    // Also use OnStarting as backup
-    context.Response.OnStarting(() =>
-    {
-        if (!context.Response.Headers.ContainsKey("Access-Control-Allow-Origin"))
-        {
-            context.Response.Headers["Access-Control-Allow-Origin"] = allowedOrigin;
-            context.Response.Headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS, PATCH";
-            context.Response.Headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, X-Requested-With";
-            context.Response.Headers["Access-Control-Allow-Credentials"] = "false";
-            Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] CORS headers added via OnStarting (backup) - Origin: {allowedOrigin}");
-        }
-        return Task.CompletedTask;
-    });
-
-    // Handle OPTIONS preflight immediately
-    if (context.Request.Method == "OPTIONS")
-    {
-        Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] OPTIONS preflight - returning 200");
-        context.Response.StatusCode = 200;
-        await context.Response.WriteAsync("");
-        return;
-    }
-
-    try
-    {
-        await next();
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] Exception: {ex.Message}");
-        // CORS headers already added, so error response will have them
-        throw;
-    }
-
-    Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] Response Status: {context.Response.StatusCode}");
-});
+// CORS middleware - MUST be before UseAuthentication/UseAuthorization
+app.UseCors();
 
 if (app.Environment.IsDevelopment())
 {
@@ -257,14 +170,7 @@ app.UseWhen(context =>
 // app.UseStaticFiles();
 // app.MapFallbackToFile("index.html");
 
-// Handle OPTIONS requests explicitly for CORS preflight - must be before other routes
-app.MapMethods("/{*path}", new[] { "OPTIONS" }, (HttpContext context) =>
-{
-    Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] OPTIONS preflight request for {context.Request.Path}");
-    // CORS middleware should handle headers, but ensure we return 200
-    return Results.Ok();
-})
-.AllowAnonymous();
+// OPTIONS requests are handled by CORS middleware automatically
 
 // Map health endpoint - must be accessible without any dependencies
 // This endpoint should NEVER fail, even if database is down
@@ -305,22 +211,6 @@ app.MapGet("/", (HttpContext context) =>
 .AllowAnonymous();
 
 app.MapControllers();
-
-// FINAL middleware - add CORS headers at the very end, after all routes
-app.Use(async (context, next) =>
-{
-    await next();
-
-    // Ensure CORS headers are ALWAYS present, even if they weren't added earlier
-    if (!context.Response.Headers.ContainsKey("Access-Control-Allow-Origin"))
-    {
-        context.Response.Headers["Access-Control-Allow-Origin"] = "*";
-        context.Response.Headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS, PATCH";
-        context.Response.Headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, X-Requested-With";
-        context.Response.Headers["Access-Control-Allow-Credentials"] = "false";
-        Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] FINAL: Added CORS headers after all processing");
-    }
-});
 
 // Run database migrations on startup (non-blocking)
 _ = Task.Run(async () =>
