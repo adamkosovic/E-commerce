@@ -87,15 +87,19 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
             maxRetryDelay: TimeSpan.FromSeconds(5),
             errorCodesToAdd: null)));
 
-// CORS Configuration - Simple and reliable
+// CORS Configuration - Allow Netlify and localhost explicitly
 builder.Services.AddCors(o =>
 {
     o.AddDefaultPolicy(p => p
-        .AllowAnyOrigin()  // Allow all origins (no credentials needed for JWT in headers)
+        .WithOrigins(
+            "https://mellow-griffin-feb028.netlify.app",
+            "http://localhost:4200",
+            "https://localhost:4200"
+        )
         .AllowAnyHeader()
-        .AllowAnyMethod());
+        .AllowAnyMethod()
+        .SetIsOriginAllowedToAllowWildcardSubdomains());
 });
-
 // Configure JWT authentication
 var jwt = builder.Configuration.GetSection("Jwt");
 var jwtKey = jwt["Key"] ?? "default-key-for-development-only-change-in-production";
@@ -134,26 +138,9 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
 var app = builder.Build();
-
-// Enable routing first
-app.UseRouting();
-
 // CORS middleware - MUST be before UseAuthentication/UseAuthorization
-
-// Handle OPTIONS preflight requests IMMEDIATELY - before CORS middleware
-app.Use(async (context, next) =>
-{
-    if (context.Request.Method == "OPTIONS")
-    {
-        // Add CORS headers for OPTIONS request
-        var origin = context.Request.Headers["Origin"].ToString();
-        context.Response.Headers["Access-Control-Allow-Origin"] = string.IsNullOrEmpty(origin) ? "*" : origin;
-        context.Response.Headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS, PATCH";
-        context.Response.Headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, X-Requested-With";
-        context.Response.StatusCode = 200;
-        await context.Response.WriteAsync("");
-        return;
-    }
+// This adds CORS headers to all responses
+app.UseCors();    }
     await next();
 });
 app.UseCors();
