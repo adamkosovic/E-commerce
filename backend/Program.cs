@@ -12,20 +12,14 @@ using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Railway sets PORT and HTTP_PORTS environment variables
-// Configure Kestrel to listen on the PORT that Railway provides
-var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+// Railway sets HTTP_PORTS environment variable (e.g., "8080")
+// .NET 9.0 automatically uses HTTP_PORTS if set, so we don't need to configure Kestrel explicitly
 var httpPorts = Environment.GetEnvironmentVariable("HTTP_PORTS");
-Console.WriteLine($"PORT: {port}, HTTP_PORTS: {httpPorts}");
+var port = Environment.GetEnvironmentVariable("PORT");
+Console.WriteLine($"HTTP_PORTS: {httpPorts}, PORT: {port}");
 
-// Configure Kestrel to listen on the correct port and interface
-// Railway uses IPv4, so bind to IPv4 explicitly (0.0.0.0)
-builder.WebHost.ConfigureKestrel(options =>
-{
-    // Listen on IPv4 (0.0.0.0) - Railway uses IPv4
-    options.Listen(System.Net.IPAddress.Any, int.Parse(port));
-    Console.WriteLine($"Kestrel configured to listen on 0.0.0.0:{port} (IPv4)");
-});
+// Let .NET 9.0 automatically use HTTP_PORTS - no explicit Kestrel configuration needed
+// This avoids the "Overriding HTTP_PORTS" warning
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -239,7 +233,8 @@ Console.WriteLine("Application starting...");
 Console.WriteLine($"Environment: {app.Environment.EnvironmentName}");
 Console.WriteLine($"Health endpoint: /health");
 Console.WriteLine($"Root endpoint: /");
-Console.WriteLine($"Listening on: http://0.0.0.0:{port}");
+var actualPort = httpPorts ?? port ?? "8080";
+Console.WriteLine($"Listening on port: {actualPort} (configured via HTTP_PORTS/PORT)");
 Console.WriteLine("========================================");
 
 app.Run();
