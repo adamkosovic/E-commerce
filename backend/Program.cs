@@ -157,15 +157,27 @@ app.UseCors("NgDev");
 app.Use(async (context, next) =>
 {
     var origin = context.Request.Headers["Origin"].ToString();
-    var userAgent = context.Request.Headers["User-Agent"].ToString();
     Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] {context.Request.Method} {context.Request.Path} from Origin: {origin}");
-    Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] Headers - Access-Control-Request-Method: {context.Request.Headers["Access-Control-Request-Method"]}, Access-Control-Request-Headers: {context.Request.Headers["Access-Control-Request-Headers"]}");
-
+    
+    if (context.Request.Method == "OPTIONS")
+    {
+        Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] OPTIONS preflight - Access-Control-Request-Method: {context.Request.Headers["Access-Control-Request-Method"]}, Access-Control-Request-Headers: {context.Request.Headers["Access-Control-Request-Headers"]}");
+    }
+    
     await next();
-
-    // Log response headers
+    
+    // Log response headers after CORS middleware has processed
+    var corsOrigin = context.Response.Headers["Access-Control-Allow-Origin"].ToString();
+    var corsMethods = context.Response.Headers["Access-Control-Allow-Methods"].ToString();
+    var corsHeaders = context.Response.Headers["Access-Control-Allow-Headers"].ToString();
+    
     Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] Response Status: {context.Response.StatusCode}");
-    Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] Response Headers - Access-Control-Allow-Origin: {context.Response.Headers["Access-Control-Allow-Origin"]}");
+    Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] CORS Headers - Allow-Origin: {corsOrigin}, Allow-Methods: {corsMethods}, Allow-Headers: {corsHeaders}");
+    
+    if (string.IsNullOrEmpty(corsOrigin) && !string.IsNullOrEmpty(origin))
+    {
+        Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] WARNING: CORS header missing! Origin was: {origin}");
+    }
 });
 
 if (app.Environment.IsDevelopment())
@@ -204,9 +216,14 @@ app.UseWhen(context =>
 // app.UseStaticFiles();
 // app.MapFallbackToFile("index.html");
 
-// Handle OPTIONS requests explicitly for CORS preflight
-app.MapMethods("/{*path}", new[] { "OPTIONS" }, () => Results.Ok())
-    .AllowAnonymous();
+// Handle OPTIONS requests explicitly for CORS preflight - must be before other routes
+app.MapMethods("/{*path}", new[] { "OPTIONS" }, (HttpContext context) =>
+{
+    Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] OPTIONS preflight request for {context.Request.Path}");
+    // CORS middleware should handle headers, but ensure we return 200
+    return Results.Ok();
+})
+.AllowAnonymous();
 
 // Map health endpoint - must be accessible without any dependencies
 // This endpoint should NEVER fail, even if database is down
