@@ -1,5 +1,4 @@
 <div class="products-wrapper">
-  <h1>Produkterna</h1>
 
   @if (products$ | async; as products) {
     @if (products.length > 0) {
@@ -28,9 +27,6 @@
               <h3 class="product-title">
                 {{ p.title }}
               </h3>
-              <p class="product-desc">
-                {{ p.description }}
-              </p>
 
               <div class="product-footer">
                 <strong class="product-price">
