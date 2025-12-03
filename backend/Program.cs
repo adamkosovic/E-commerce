@@ -175,35 +175,35 @@ app.Use(async (context, next) =>
     }
 });
 
-// Add request logging for debugging (after CORS)
+// Add CORS headers manually BEFORE the request is processed (ensures they're always present)
 app.Use(async (context, next) =>
 {
     var origin = context.Request.Headers["Origin"].ToString();
     Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] {context.Request.Method} {context.Request.Path} from Origin: {origin}");
 
+    // ALWAYS add CORS headers manually as a fallback (before any processing)
+    if (!string.IsNullOrEmpty(origin))
+    {
+        context.Response.Headers["Access-Control-Allow-Origin"] = "*";
+        context.Response.Headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS, PATCH";
+        context.Response.Headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, X-Requested-With";
+        context.Response.Headers["Access-Control-Allow-Credentials"] = "false";
+        Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] Added CORS headers manually for origin: {origin}");
+    }
+
     if (context.Request.Method == "OPTIONS")
     {
         Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] OPTIONS preflight - Access-Control-Request-Method: {context.Request.Headers["Access-Control-Request-Method"]}, Access-Control-Request-Headers: {context.Request.Headers["Access-Control-Request-Headers"]}");
+        // Return immediately for OPTIONS requests
+        context.Response.StatusCode = 200;
+        return;
     }
 
     await next();
 
-    // Log response headers after CORS middleware has processed
+    // Log response headers after processing
     var corsOrigin = context.Response.Headers["Access-Control-Allow-Origin"].ToString();
-    var corsMethods = context.Response.Headers["Access-Control-Allow-Methods"].ToString();
-    var corsHeaders = context.Response.Headers["Access-Control-Allow-Headers"].ToString();
-
-    Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] Response Status: {context.Response.StatusCode}");
-    Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] CORS Headers - Allow-Origin: {corsOrigin}, Allow-Methods: {corsMethods}, Allow-Headers: {corsHeaders}");
-
-    // FALLBACK: If CORS headers are missing, add them manually
-    if (string.IsNullOrEmpty(corsOrigin) && !string.IsNullOrEmpty(origin) && !context.Response.HasStarted)
-    {
-        Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] WARNING: CORS header missing! Adding manually. Origin was: {origin}");
-        context.Response.Headers["Access-Control-Allow-Origin"] = "*";
-        context.Response.Headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS";
-        context.Response.Headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization";
-    }
+    Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] Response Status: {context.Response.StatusCode}, CORS Origin: {corsOrigin}");
 });
 
 if (app.Environment.IsDevelopment())
