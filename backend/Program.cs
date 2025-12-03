@@ -103,13 +103,6 @@ builder.Services.AddAuthorization(options =>
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
-// Configure Kestrel to listen on Railway's PORT
-var port = Environment.GetEnvironmentVariable("PORT");
-if (!string.IsNullOrEmpty(port))
-{
-    builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
-}
-
 var app = builder.Build();
 
 // CORS must be the VERY FIRST middleware - before anything else
@@ -150,7 +143,9 @@ app.MapControllers();
 app.MapGet("/health", () => new { status = "ok", timestamp = DateTime.UtcNow })
     .AllowAnonymous();
 
-// Railway automatically sets PORT environment variable and handles port binding
-// No need to manually configure port - Railway does this automatically
+// Configure port from Railway's PORT environment variable
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+app.Urls.Clear();
+app.Urls.Add($"http://0.0.0.0:{port}");
 
 app.Run();
