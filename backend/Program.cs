@@ -92,7 +92,11 @@ builder.Services
         };
     });
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    // Allow OPTIONS requests to bypass authorization (needed for CORS preflight)
+    options.FallbackPolicy = options.DefaultPolicy;
+});
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
@@ -106,7 +110,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-else 
+else
 {
     app.UseHsts();
 }
@@ -132,5 +136,8 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+// Configure port for Railway (uses PORT environment variable)
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+app.Urls.Add($"http://0.0.0.0:{port}");
 
 app.Run();
