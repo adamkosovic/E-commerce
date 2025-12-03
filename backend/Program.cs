@@ -13,15 +13,14 @@ using Microsoft.AspNetCore.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Railway sets PORT environment variable - we need to explicitly configure it
-// .NET 9.0 might not automatically bind to 0.0.0.0, so we'll set it explicitly
+// Railway sets PORT environment variable - configure to listen on all interfaces
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 var httpPorts = Environment.GetEnvironmentVariable("HTTP_PORTS");
 Console.WriteLine($"PORT: {port}, HTTP_PORTS: {httpPorts}");
 
-// Explicitly configure the URL to listen on all interfaces
-builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
-Console.WriteLine($"Explicitly configured to listen on http://0.0.0.0:{port}");
+// Use * instead of 0.0.0.0 for better compatibility with Railway
+builder.WebHost.UseUrls($"http://*:{port}");
+Console.WriteLine($"Configured to listen on http://*:{port}");
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -134,8 +133,12 @@ if (app.Environment.IsDevelopment())
     app.UseHttpsRedirection();
 }
 
-app.UseAuthentication();
-app.UseAuthorization();
+// Skip authentication/authorization for health checks
+app.UseWhen(context => !context.Request.Path.StartsWithSegments("/health"), appBuilder =>
+{
+    appBuilder.UseAuthentication();
+    appBuilder.UseAuthorization();
+});
 
 
 // 🚧 Tillfälligt bortkommenterat under utveckling.
