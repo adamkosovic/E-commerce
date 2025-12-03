@@ -14,27 +14,23 @@ using backend.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Railway sets HTTP_PORTS automatically - let .NET 9.0 use it
-// NEVER call UseUrls on Railway - it causes "Overriding HTTP_PORTS" warning and container restarts
+// Railway sets PORT and HTTP_PORTS environment variables
+// Configure Kestrel to listen on the PORT that Railway provides
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 var httpPorts = Environment.GetEnvironmentVariable("HTTP_PORTS");
-var isRailway = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("RAILWAY_ENVIRONMENT"))
-    || !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("RAILWAY_PROJECT_ID"))
-    || !string.IsNullOrEmpty(httpPorts);
+Console.WriteLine($"PORT: {port}, HTTP_PORTS: {httpPorts}");
 
-Console.WriteLine($"PORT: {port}, HTTP_PORTS: {httpPorts}, IsRailway: {isRailway}");
+// Configure Kestrel to listen on the correct port and interface
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenAnyIP(int.Parse(port));
+    Console.WriteLine($"Kestrel configured to listen on 0.0.0.0:{port}");
+});
 
-// NEVER call UseUrls on Railway - .NET 9.0 will automatically use HTTP_PORTS
-// Only call UseUrls for local development when NOT on Railway
-if (!isRailway)
-{
-    builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
-    Console.WriteLine($"Configured to listen on http://0.0.0.0:{port} (local development)");
-}
-else
-{
-    Console.WriteLine($"Railway detected - letting .NET automatically use HTTP_PORTS (DO NOT call UseUrls)");
-}
+// Also set ASPNETCORE_URLS to ensure .NET uses the correct port
+// This works with HTTP_PORTS and doesn't cause override warnings
+Environment.SetEnvironmentVariable("ASPNETCORE_URLS", $"http://0.0.0.0:{port}");
+Console.WriteLine($"ASPNETCORE_URLS set to http://0.0.0.0:{port}");
 
 builder.Services.AddControllers(options =>
 {
