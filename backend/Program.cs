@@ -55,7 +55,7 @@ builder.Services.AddSwaggerGen(c =>
 
 // Configure DbContext with retry logic and lazy connection
 builder.Services.AddDbContext<AppDbContext>(opt =>
-    opt.UseNpgsql(builder.Configuration.GetConnectionString("Default"), 
+    opt.UseNpgsql(builder.Configuration.GetConnectionString("Default"),
         npgsqlOptions => npgsqlOptions.EnableRetryOnFailure(
             maxRetryCount: 3,
             maxRetryDelay: TimeSpan.FromSeconds(5),
@@ -120,15 +120,16 @@ builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
 var app = builder.Build();
 
-// Add request logging for debugging
+// CORS must be the ABSOLUTE FIRST middleware - even before logging
+// This is critical for CORS preflight (OPTIONS) requests
+app.UseCors("NgDev");
+
+// Add request logging for debugging (after CORS)
 app.Use(async (context, next) =>
 {
-    Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] {context.Request.Method} {context.Request.Path}");
+    Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] {context.Request.Method} {context.Request.Path} from {context.Request.Headers["Origin"]}");
     await next();
 });
-
-// CORS must be the VERY FIRST middleware - before anything else
-app.UseCors("NgDev");
 
 if (app.Environment.IsDevelopment())
 {
@@ -146,8 +147,11 @@ if (app.Environment.IsDevelopment())
     app.UseHttpsRedirection();
 }
 
-// Skip authentication/authorization for health checks
-app.UseWhen(context => !context.Request.Path.StartsWithSegments("/health"), appBuilder =>
+// Skip authentication/authorization for OPTIONS (CORS preflight) and health checks
+app.UseWhen(context => 
+    !context.Request.Path.StartsWithSegments("/health") && 
+    context.Request.Method != "OPTIONS", 
+    appBuilder =>
 {
     appBuilder.UseAuthentication();
     appBuilder.UseAuthorization();
@@ -170,8 +174,9 @@ app.MapGet("/health", () =>
     try
     {
         Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] Health check called");
-        return Results.Ok(new { 
-            status = "ok", 
+        return Results.Ok(new
+        {
+            status = "ok",
             timestamp = DateTime.UtcNow,
             uptime = "healthy"
         });
