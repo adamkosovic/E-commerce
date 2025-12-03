@@ -151,7 +151,27 @@ var app = builder.Build();
 
 // CORS must be the ABSOLUTE FIRST middleware - even before logging
 // This is critical for CORS preflight (OPTIONS) requests
+// UseCors must be called before UseRouting, UseAuthentication, UseAuthorization
 app.UseCors("NgDev");
+
+// Ensure CORS headers are added even on errors
+app.Use(async (context, next) =>
+{
+    try
+    {
+        await next();
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] Exception: {ex.Message}");
+        // Ensure CORS headers are still added even on error
+        if (!context.Response.HasStarted)
+        {
+            context.Response.StatusCode = 500;
+        }
+        throw;
+    }
+});
 
 // Add request logging for debugging (after CORS)
 app.Use(async (context, next) =>
