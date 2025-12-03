@@ -16,14 +16,9 @@ namespace backend.Migrations
                 // table: "Products",
                 // newName: "id");
 
-            migrationBuilder.AlterColumn<string>(
-                name: "Title",
-                table: "OrderItems",
-                type: "text",
-                nullable: false,
-                oldClrType: typeof(string),
-                oldType: "character varying(200)",
-                oldMaxLength: 200);
+            // Skip OrderItems alteration - table doesn't exist yet
+            // This migration is for adding Cart models only
+            // OrderItems will be created in a future migration if needed
 
             migrationBuilder.CreateTable(
                 name: "Carts",
@@ -95,14 +90,7 @@ namespace backend.Migrations
                 table: "Products",
                 newName: "Id");
 
-            migrationBuilder.AlterColumn<string>(
-                name: "Title",
-                table: "OrderItems",
-                type: "character varying(200)",
-                maxLength: 200,
-                nullable: false,
-                oldClrType: typeof(string),
-                oldType: "text");
+            // Skip OrderItems alteration in Down migration too
         }
     }
 }
