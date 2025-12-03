@@ -145,6 +145,15 @@ app.UseRouting();
 // CORS middleware - MUST be before UseAuthentication/UseAuthorization
 // This adds CORS headers to all responses
 app.UseCors();
+
+// Log all incoming requests for debugging
+app.Use(async (context, next) =>
+{
+    var origin = context.Request.Headers["Origin"].ToString();
+    Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] {context.Request.Method} {context.Request.Path} from Origin: {origin}");
+    await next();
+    Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] Response: {context.Response.StatusCode} for {context.Request.Method} {context.Request.Path}");
+});
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
