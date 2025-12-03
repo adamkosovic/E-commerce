@@ -13,6 +13,14 @@ using Microsoft.AspNetCore.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Configure port from Railway's PORT environment variable at builder level
+var port = Environment.GetEnvironmentVariable("PORT");
+if (!string.IsNullOrEmpty(port))
+{
+    builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+    Console.WriteLine($"Configured to listen on port: {port}");
+}
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -137,23 +145,9 @@ app.UseAuthorization();
 // app.UseStaticFiles();
 // app.MapFallbackToFile("index.html");
 
-// Configure port from Railway's PORT environment variable BEFORE mapping routes
-// Railway sets PORT automatically - we need to listen on that port
-var port = Environment.GetEnvironmentVariable("PORT");
-if (!string.IsNullOrEmpty(port))
-{
-    app.Urls.Clear();
-    app.Urls.Add($"http://0.0.0.0:{port}");
-    Console.WriteLine($"Listening on port: {port}");
-}
-else
-{
-    Console.WriteLine("WARNING: PORT environment variable not set, using default");
-}
-
 // Simple health check endpoint - map before controllers
 // Railway uses this for health checks
-app.MapGet("/health", () => 
+app.MapGet("/health", () =>
 {
     try
     {
