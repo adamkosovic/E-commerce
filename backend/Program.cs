@@ -53,8 +53,13 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+// Configure DbContext with retry logic and lazy connection
 builder.Services.AddDbContext<AppDbContext>(opt =>
-    opt.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
+    opt.UseNpgsql(builder.Configuration.GetConnectionString("Default"), 
+        npgsqlOptions => npgsqlOptions.EnableRetryOnFailure(
+            maxRetryCount: 3,
+            maxRetryDelay: TimeSpan.FromSeconds(5),
+            errorCodesToAdd: null)));
 
 // CORS - Tillåt Angular dev-servern och Netlify
 // Using explicit origins for maximum compatibility
@@ -152,10 +157,23 @@ app.UseWhen(context => !context.Request.Path.StartsWithSegments("/health"), appB
 // app.MapFallbackToFile("index.html");
 
 // Map health endpoint - must be accessible without any dependencies
+// This endpoint should NEVER fail, even if database is down
 app.MapGet("/health", () =>
 {
-    Console.WriteLine("Health check called");
-    return Results.Ok(new { status = "ok", timestamp = DateTime.UtcNow });
+    try
+    {
+        Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] Health check called");
+        return Results.Ok(new { 
+            status = "ok", 
+            timestamp = DateTime.UtcNow,
+            uptime = "healthy"
+        });
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Health check error: {ex.Message}");
+        return Results.Ok(new { status = "ok", timestamp = DateTime.UtcNow });
+    }
 })
 .WithName("health")
 .AllowAnonymous();
@@ -167,5 +185,7 @@ app.MapGet("/", () => Results.Ok(new { message = "API is running", timestamp = D
 app.MapControllers();
 
 Console.WriteLine("Application starting...");
-Console.WriteLine("Health endpoint available at: /health");
+Console.WriteLine($"Health endpoint available at: /health");
+Console.WriteLine($"Root endpoint available at: /");
+Console.WriteLine($"Listening on: http://0.0.0.0:{port}");
 app.Run();
