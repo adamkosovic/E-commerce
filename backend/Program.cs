@@ -279,8 +279,18 @@ app.MapGet("/healthz", () =>
 .AllowAnonymous();
 
 // Also add root endpoint for testing
-app.MapGet("/", () => Results.Ok(new { message = "API is running", timestamp = DateTime.UtcNow }))
-    .AllowAnonymous();
+app.MapGet("/", (HttpContext context) =>
+{
+    var corsHeader = context.Response.Headers["Access-Control-Allow-Origin"].ToString();
+    return Results.Ok(new 
+    { 
+        message = "API is running", 
+        timestamp = DateTime.UtcNow,
+        corsHeader = corsHeader,
+        hasCorsHeader = !string.IsNullOrEmpty(corsHeader)
+    });
+})
+.AllowAnonymous();
 
 app.MapControllers();
 
@@ -288,7 +298,7 @@ app.MapControllers();
 app.Use(async (context, next) =>
 {
     await next();
-    
+
     // Ensure CORS headers are ALWAYS present, even if they weren't added earlier
     if (!context.Response.Headers.ContainsKey("Access-Control-Allow-Origin"))
     {
