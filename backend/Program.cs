@@ -46,29 +46,36 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
     opt.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
 
 // CORS - Tillåt Angular dev-servern och Netlify
-// CRITICAL: SetIsOriginAllowed() does NOT work with AllowCredentials()
-// When using AllowCredentials(), you MUST use WithOrigins() with explicit origins
-var allowedOrigins = new List<string>
-{
-    "http://localhost:4200",
-    "https://localhost:4200",
-    "https://mellow-griffin-feb028.netlify.app"
-};
-
-// Add additional origins from configuration (semicolon-separated)
-var additionalOrigins = builder.Configuration["CORS:AllowedOrigins"];
-if (!string.IsNullOrEmpty(additionalOrigins))
-{
-    allowedOrigins.AddRange(additionalOrigins.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries));
-}
-
+// Since we're not using AllowCredentials(), we can use SetIsOriginAllowed for flexibility
 builder.Services.AddCors(o =>
 {
     o.AddPolicy("NgDev", p => p
-        .WithOrigins(allowedOrigins.ToArray())
+        .SetIsOriginAllowed(origin =>
+        {
+            if (string.IsNullOrEmpty(origin)) return false;
+            
+            // Allow localhost for development
+            if (origin.StartsWith("http://localhost:") || origin.StartsWith("https://localhost:"))
+                return true;
+            
+            // Allow all Netlify deployments
+            if (origin.EndsWith(".netlify.app"))
+                return true;
+            
+            // Allow specific origins from configuration
+            var allowedOrigins = builder.Configuration["CORS:AllowedOrigins"];
+            if (!string.IsNullOrEmpty(allowedOrigins))
+            {
+                var origins = allowedOrigins.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                if (origins.Contains(origin))
+                    return true;
+            }
+            
+            return false;
+        })
         .AllowAnyHeader()
-        .AllowAnyMethod()
-        .AllowCredentials());
+        .AllowAnyMethod());
+        // No AllowCredentials() - JWT tokens are sent in Authorization header, not cookies
 });
 
 var jwt = builder.Configuration.GetSection("Jwt");
@@ -104,7 +111,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-else 
+else
 {
     app.UseHsts();
 }
