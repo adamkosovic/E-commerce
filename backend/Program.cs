@@ -316,18 +316,45 @@ _ = Task.Run(async () =>
 {
     try
     {
-        await Task.Delay(1000); // Wait 1 second for app to fully start
+        await Task.Delay(2000); // Wait 2 seconds for app to fully start
         Console.WriteLine("Checking database connection and running migrations...");
         using (var scope = app.Services.CreateScope())
         {
             var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-            await dbContext.Database.MigrateAsync();
-            Console.WriteLine("Database migrations completed successfully.");
+            
+            // Check if database can connect first
+            var canConnect = await dbContext.Database.CanConnectAsync();
+            Console.WriteLine($"Database can connect: {canConnect}");
+            
+            if (canConnect)
+            {
+                // Get pending migrations
+                var pendingMigrations = await dbContext.Database.GetPendingMigrationsAsync();
+                var pendingList = pendingMigrations.ToList();
+                Console.WriteLine($"Pending migrations: {pendingList.Count}");
+                if (pendingList.Any())
+                {
+                    Console.WriteLine($"Migrations to apply: {string.Join(", ", pendingList)}");
+                }
+                
+                // Apply migrations
+                await dbContext.Database.MigrateAsync();
+                Console.WriteLine("Database migrations completed successfully.");
+            }
+            else
+            {
+                Console.WriteLine("WARNING: Cannot connect to database. Migrations skipped.");
+            }
         }
     }
     catch (Exception ex)
     {
         Console.WriteLine($"WARNING: Database migration failed: {ex.Message}");
+        Console.WriteLine($"Exception type: {ex.GetType().Name}");
+        if (ex.InnerException != null)
+        {
+            Console.WriteLine($"Inner exception: {ex.InnerException.Message}");
+        }
         Console.WriteLine($"Stack trace: {ex.StackTrace}");
         Console.WriteLine("Application will continue, but database operations may fail.");
     }
