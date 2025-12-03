@@ -32,7 +32,11 @@ else
     // Let .NET 9.0 automatically use HTTP_PORTS - don't override it
 }
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    // Add global CORS filter to ensure CORS headers are always present
+    options.Filters.Add(new Microsoft.AspNetCore.Mvc.Cors.CorsAuthorizationFilterFactory("NgDev"));
+});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -189,7 +193,7 @@ app.Use(async (context, next) =>
         Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] Exception: {ex.Message}");
         throw;
     }
-    
+
     Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] Response Status: {context.Response.StatusCode}");
 });
 
