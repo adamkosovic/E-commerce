@@ -147,8 +147,16 @@ app.UseCors("NgDev");
 // Add request logging for debugging (after CORS)
 app.Use(async (context, next) =>
 {
-    Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] {context.Request.Method} {context.Request.Path} from {context.Request.Headers["Origin"]}");
+    var origin = context.Request.Headers["Origin"].ToString();
+    var userAgent = context.Request.Headers["User-Agent"].ToString();
+    Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] {context.Request.Method} {context.Request.Path} from Origin: {origin}");
+    Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] Headers - Access-Control-Request-Method: {context.Request.Headers["Access-Control-Request-Method"]}, Access-Control-Request-Headers: {context.Request.Headers["Access-Control-Request-Headers"]}");
+    
     await next();
+    
+    // Log response headers
+    Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] Response Status: {context.Response.StatusCode}");
+    Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] Response Headers - Access-Control-Allow-Origin: {context.Response.Headers["Access-Control-Allow-Origin"]}");
 });
 
 if (app.Environment.IsDevelopment())
