@@ -15,24 +15,25 @@ using backend.Filters;
 var builder = WebApplication.CreateBuilder(args);
 
 // Railway sets HTTP_PORTS automatically - let .NET 9.0 use it
-// NEVER override HTTP_PORTS to avoid the "Overriding HTTP_PORTS" warning
+// NEVER call UseUrls on Railway - it causes "Overriding HTTP_PORTS" warning and container restarts
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 var httpPorts = Environment.GetEnvironmentVariable("HTTP_PORTS");
-Console.WriteLine($"PORT: {port}, HTTP_PORTS: {httpPorts}");
+var isRailway = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("RAILWAY_ENVIRONMENT"))
+    || !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("RAILWAY_PROJECT_ID"))
+    || !string.IsNullOrEmpty(httpPorts);
 
-// .NET 9.0 automatically uses HTTP_PORTS if set
-// DO NOT call UseUrls when HTTP_PORTS is set (Railway sets it)
-// This prevents the "Overriding HTTP_PORTS" warning and container restarts
-if (!string.IsNullOrEmpty(httpPorts))
+Console.WriteLine($"PORT: {port}, HTTP_PORTS: {httpPorts}, IsRailway: {isRailway}");
+
+// NEVER call UseUrls on Railway - .NET 9.0 will automatically use HTTP_PORTS
+// Only call UseUrls for local development when NOT on Railway
+if (!isRailway)
 {
-    Console.WriteLine($"Railway HTTP_PORTS detected: {httpPorts} - letting .NET handle it automatically");
-    // Don't call UseUrls - let .NET use HTTP_PORTS
+    builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+    Console.WriteLine($"Configured to listen on http://0.0.0.0:{port} (local development)");
 }
 else
 {
-    // Only for local development when HTTP_PORTS is not set
-    builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
-    Console.WriteLine($"Configured to listen on http://0.0.0.0:{port} (local development, HTTP_PORTS not set)");
+    Console.WriteLine($"Railway detected - letting .NET automatically use HTTP_PORTS (DO NOT call UseUrls)");
 }
 
 builder.Services.AddControllers(options =>
