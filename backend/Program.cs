@@ -28,6 +28,14 @@ if (!int.TryParse(listenPort, out int portNumber) || portNumber < 1 || portNumbe
     listenPort = "8080";
 }
 
+// Configure Kestrel to listen on the correct port and IPv4 interface
+// Railway uses IPv4, so bind to 0.0.0.0 (not [::] which is IPv6)
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.Listen(System.Net.IPAddress.Any, portNumber);
+    Console.WriteLine($"Kestrel configured to listen on 0.0.0.0:{portNumber} (IPv4)");
+});
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
