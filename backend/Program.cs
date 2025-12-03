@@ -144,8 +144,12 @@ app.MapGet("/health", () => new { status = "ok", timestamp = DateTime.UtcNow })
     .AllowAnonymous();
 
 // Configure port from Railway's PORT environment variable
-var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
-app.Urls.Clear();
-app.Urls.Add($"http://0.0.0.0:{port}");
+// Railway sets PORT automatically - we need to listen on that port
+var port = Environment.GetEnvironmentVariable("PORT");
+if (!string.IsNullOrEmpty(port))
+{
+    app.Urls.Clear();
+    app.Urls.Add($"http://0.0.0.0:{port}");
+}
 
 app.Run();

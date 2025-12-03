@@ -25,7 +25,6 @@ EXPOSE 8080
 
 # Set environment to Production
 ENV ASPNETCORE_ENVIRONMENT=Production
-ENV ASPNETCORE_URLS=http://0.0.0.0:8080
 
 # Run the app
 ENTRYPOINT ["dotnet", "backend.dll"]
