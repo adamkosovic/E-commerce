@@ -415,7 +415,7 @@ Console.WriteLine("Application starting...");
 Console.WriteLine($"Environment: {app.Environment.EnvironmentName}");
 Console.WriteLine($"Health endpoint: /health");
 Console.WriteLine($"Root endpoint: /");
-Console.WriteLine($"Listening on: http://0.0.0.0:{listenPort}");
+Console.WriteLine($"Listening on: http://0.0.0.0:{port}");
 Console.WriteLine("========================================");
 
 app.Run();
