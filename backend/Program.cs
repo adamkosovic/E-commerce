@@ -149,21 +149,30 @@ builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
 var app = builder.Build();
 
-// Add CORS headers manually FIRST - before ANY other middleware
-// This ensures CORS headers are ALWAYS present, even if other middleware fails
+// Enable routing first
+app.UseRouting();
+
+// CORS middleware
+app.UseCors("NgDev");
+
+// Add CORS headers using OnStarting callback - ensures they're added right before response is sent
 app.Use(async (context, next) =>
 {
     var origin = context.Request.Headers["Origin"].ToString();
-    
-    // ALWAYS add CORS headers for ALL requests (even if no Origin header)
-    context.Response.Headers["Access-Control-Allow-Origin"] = "*";
-    context.Response.Headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS, PATCH";
-    context.Response.Headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, X-Requested-With";
-    context.Response.Headers["Access-Control-Allow-Credentials"] = "false";
-    
-    Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] {context.Request.Method} {context.Request.Path} from Origin: {origin} - CORS headers added");
+    Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] {context.Request.Method} {context.Request.Path} from Origin: {origin}");
 
-    // Handle OPTIONS preflight immediately
+    // Use OnStarting to add CORS headers right before response is sent
+    context.Response.OnStarting(() =>
+    {
+        context.Response.Headers["Access-Control-Allow-Origin"] = "*";
+        context.Response.Headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS, PATCH";
+        context.Response.Headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, X-Requested-With";
+        context.Response.Headers["Access-Control-Allow-Credentials"] = "false";
+        Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] CORS headers added via OnStarting");
+        return Task.CompletedTask;
+    });
+
+    // Handle OPTIONS preflight
     if (context.Request.Method == "OPTIONS")
     {
         Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] OPTIONS preflight - returning 200");
@@ -178,18 +187,11 @@ app.Use(async (context, next) =>
     catch (Exception ex)
     {
         Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] Exception: {ex.Message}");
-        // CORS headers already added above, so they'll be in the error response too
         throw;
     }
     
     Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] Response Status: {context.Response.StatusCode}");
 });
-
-// Enable routing (required for endpoint routing)
-app.UseRouting();
-
-// CORS middleware (backup - headers already added above)
-app.UseCors("NgDev");
 
 if (app.Environment.IsDevelopment())
 {
