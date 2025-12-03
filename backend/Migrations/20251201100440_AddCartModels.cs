@@ -12,9 +12,9 @@ namespace backend.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             //migrationBuilder.RenameColumn(
-                // name: "Id",
-                // table: "Products",
-                // newName: "id");
+            // name: "Id",
+            // table: "Products",
+            // newName: "id");
 
             // Skip OrderItems alteration - table doesn't exist yet
             // This migration is for adding Cart models only
