@@ -1,7 +1,15 @@
 /* Grundlayout */
+
+:host {
+  display: block;
+  background-color: #f3f3f3;
+  min-height: 100vh;
+  padding: 40px 0 30px;
+}
+
 .cart-container {
   max-width: 960px;
-  margin: 2rem auto;
+  margin: 0 auto;
   padding: 1.5rem;
   background: #ffffff;
   border-radius: 12px;
@@ -15,20 +23,17 @@
   font-weight: 600;
 }
 
-/* Tom kundvagn */
 .cart-empty {
   padding: 1rem;
   text-align: center;
   color: #6b7280;
 }
 
-/* Tabell-wrapper för mobil (scroll istället för att tabellen går sönder) */
 .table-wrapper {
   width: 100%;
   overflow-x: auto;
 }
 
-/* Tabell */
 .cart-table {
   width: 100%;
   border-collapse: collapse;
@@ -101,7 +106,6 @@ button {
   background: #f3f4f6;
 }
 
-/* Summering & actions */
 .cart-summary {
   margin-top: 1rem;
   display: flex;
@@ -132,10 +136,6 @@ button {
 
 /* Responsivt */
 @media (max-width: 640px) {
-  .cart-container {
-    margin: 1rem;
-    padding: 1rem;
-  }
 
   .cart-title {
     font-size: 1.25rem;

@@ -13,6 +13,13 @@
   --brand-700: #1d4ed8;      /* blue-700 */
 }
 
+:host {
+  display: block;
+  background-color: #f3f3f3;
+  min-height: 100vh;
+  padding-bottom: 30px;
+}
+
 .container{
   max-width: 1200px;
   margin-inline: auto;
@@ -98,17 +105,6 @@
   cursor: pointer;
   box-shadow: 0 6px 16px rgba(15,23,42,.22);
   transition: transform .15s ease, box-shadow .2s ease, background-color .15s ease;
-}
-
-.btn-cta:hover{
-  background: #020617;
-  transform: translateY(-1px);
-  box-shadow: 0 10px 22px rgba(15,23,42,.28);
-}
-
-.btn-cta:focus{
-  outline: none;
-  box-shadow: 0 0 0 4px var(--ring);
 }
 
 
@@ -207,11 +203,6 @@
   background: #111827;
   color: #fff;
   transition: transform 0.15s ease, box-shadow 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
-}
-
-.btn-dark-full:hover {
-  background: #0b1220;
-  transform: translateY(-1px);
 }
 
 .btn-transparent-full {
