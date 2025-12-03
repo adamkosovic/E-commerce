@@ -277,11 +277,11 @@ app.MapGet("/db-test", async (AppDbContext db) =>
         var canConnect = await db.Database.CanConnectAsync();
         var productCount = canConnect ? await db.Products.CountAsync() : -1;
         Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] Database connection test: CanConnect={canConnect}, ProductCount={productCount}");
-        return Results.Ok(new 
-        { 
-            connected = canConnect, 
+        return Results.Ok(new
+        {
+            connected = canConnect,
             productCount = productCount,
-            timestamp = DateTime.UtcNow 
+            timestamp = DateTime.UtcNow
         });
     }
     catch (Exception ex)
