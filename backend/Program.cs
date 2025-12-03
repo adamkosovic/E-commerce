@@ -49,7 +49,7 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
 builder.Services.AddCors(o =>
 {
     o.AddPolicy("NgDev", p => p
-        .WithOrigins("http://localhost:4200")
+        .WithOrigins("http://localhost:4200", "mellow-griffin-feb028.netlify.app")
         .AllowAnyHeader()
         .AllowAnyMethod());
 });
