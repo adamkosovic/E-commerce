@@ -149,16 +149,28 @@ builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
 var app = builder.Build();
 
-// Enable routing first (required for endpoint routing)
-app.UseRouting();
-
-// CORS must be called after UseRouting but before UseAuthentication/UseAuthorization
-// This is critical for CORS preflight (OPTIONS) requests
-app.UseCors("NgDev");
-
-// Ensure CORS headers are added even on errors
+// Add CORS headers manually FIRST - before ANY other middleware
+// This ensures CORS headers are ALWAYS present, even if other middleware fails
 app.Use(async (context, next) =>
 {
+    var origin = context.Request.Headers["Origin"].ToString();
+    
+    // ALWAYS add CORS headers for ALL requests (even if no Origin header)
+    context.Response.Headers["Access-Control-Allow-Origin"] = "*";
+    context.Response.Headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS, PATCH";
+    context.Response.Headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, X-Requested-With";
+    context.Response.Headers["Access-Control-Allow-Credentials"] = "false";
+    
+    Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] {context.Request.Method} {context.Request.Path} from Origin: {origin} - CORS headers added");
+
+    // Handle OPTIONS preflight immediately
+    if (context.Request.Method == "OPTIONS")
+    {
+        Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] OPTIONS preflight - returning 200");
+        context.Response.StatusCode = 200;
+        return;
+    }
+
     try
     {
         await next();
@@ -166,45 +178,18 @@ app.Use(async (context, next) =>
     catch (Exception ex)
     {
         Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] Exception: {ex.Message}");
-        // Ensure CORS headers are still added even on error
-        if (!context.Response.HasStarted)
-        {
-            context.Response.StatusCode = 500;
-        }
+        // CORS headers already added above, so they'll be in the error response too
         throw;
     }
+    
+    Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] Response Status: {context.Response.StatusCode}");
 });
 
-// Add CORS headers manually BEFORE the request is processed (ensures they're always present)
-app.Use(async (context, next) =>
-{
-    var origin = context.Request.Headers["Origin"].ToString();
-    Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] {context.Request.Method} {context.Request.Path} from Origin: {origin}");
+// Enable routing (required for endpoint routing)
+app.UseRouting();
 
-    // ALWAYS add CORS headers manually as a fallback (before any processing)
-    if (!string.IsNullOrEmpty(origin))
-    {
-        context.Response.Headers["Access-Control-Allow-Origin"] = "*";
-        context.Response.Headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS, PATCH";
-        context.Response.Headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, X-Requested-With";
-        context.Response.Headers["Access-Control-Allow-Credentials"] = "false";
-        Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] Added CORS headers manually for origin: {origin}");
-    }
-
-    if (context.Request.Method == "OPTIONS")
-    {
-        Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] OPTIONS preflight - Access-Control-Request-Method: {context.Request.Headers["Access-Control-Request-Method"]}, Access-Control-Request-Headers: {context.Request.Headers["Access-Control-Request-Headers"]}");
-        // Return immediately for OPTIONS requests
-        context.Response.StatusCode = 200;
-        return;
-    }
-
-    await next();
-
-    // Log response headers after processing
-    var corsOrigin = context.Response.Headers["Access-Control-Allow-Origin"].ToString();
-    Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] Response Status: {context.Response.StatusCode}, CORS Origin: {corsOrigin}");
-});
+// CORS middleware (backup - headers already added above)
+app.UseCors("NgDev");
 
 if (app.Environment.IsDevelopment())
 {
