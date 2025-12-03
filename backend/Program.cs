@@ -13,14 +13,15 @@ using Microsoft.AspNetCore.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Railway sets PORT environment variable - configure to listen on all interfaces
+// Railway sets PORT environment variable - configure to listen on IPv4 (0.0.0.0)
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 var httpPorts = Environment.GetEnvironmentVariable("HTTP_PORTS");
 Console.WriteLine($"PORT: {port}, HTTP_PORTS: {httpPorts}");
 
-// Use * instead of 0.0.0.0 for better compatibility with Railway
-builder.WebHost.UseUrls($"http://*:{port}");
-Console.WriteLine($"Configured to listen on http://*:{port}");
+// Explicitly bind to IPv4 (0.0.0.0) - Railway uses IPv4
+// Using * can cause .NET to bind to IPv6 only, which Railway can't reach
+builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+Console.WriteLine($"Configured to listen on http://0.0.0.0:{port} (IPv4)");
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
