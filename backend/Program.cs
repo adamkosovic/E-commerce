@@ -21,16 +21,12 @@ var httpPorts = Environment.GetEnvironmentVariable("HTTP_PORTS");
 Console.WriteLine($"PORT: {port}, HTTP_PORTS: {httpPorts}");
 
 // Configure Kestrel to listen on the correct port and interface
+// This is the recommended way for Railway - doesn't override HTTP_PORTS
 builder.WebHost.ConfigureKestrel(options =>
 {
     options.ListenAnyIP(int.Parse(port));
     Console.WriteLine($"Kestrel configured to listen on 0.0.0.0:{port}");
 });
-
-// Also set ASPNETCORE_URLS to ensure .NET uses the correct port
-// This works with HTTP_PORTS and doesn't cause override warnings
-Environment.SetEnvironmentVariable("ASPNETCORE_URLS", $"http://0.0.0.0:{port}");
-Console.WriteLine($"ASPNETCORE_URLS set to http://0.0.0.0:{port}");
 
 builder.Services.AddControllers(options =>
 {
