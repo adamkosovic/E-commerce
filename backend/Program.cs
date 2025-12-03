@@ -66,7 +66,8 @@ builder.Services.AddCors(o =>
     o.AddPolicy("NgDev", p => p
         .WithOrigins(allowedOrigins.ToArray())
         .AllowAnyHeader()
-        .AllowAnyMethod());
+        .AllowAnyMethod()
+        .SetPreflightMaxAge(TimeSpan.FromSeconds(3600))); // Cache preflight for 1 hour
     // No AllowCredentials() - JWT tokens are sent in Authorization header, not cookies
 });
 
@@ -136,8 +137,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-// Configure port for Railway (uses PORT environment variable)
-var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
-app.Urls.Add($"http://0.0.0.0:{port}");
+// Railway automatically sets PORT environment variable and handles port binding
+// No need to manually configure port - Railway does this automatically
 
 app.Run();
