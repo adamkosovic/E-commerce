@@ -13,23 +13,22 @@ using Microsoft.AspNetCore.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Railway sets PORT and HTTP_PORTS environment variables
-// .NET 9.0 automatically uses HTTP_PORTS if set, so we don't need to configure it manually
-// This avoids the "Overriding HTTP_PORTS" warning and lets Railway handle port binding
+// Railway sets HTTP_PORTS automatically - let .NET 9.0 use it
+// Don't override it to avoid the "Overriding HTTP_PORTS" warning
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 var httpPorts = Environment.GetEnvironmentVariable("HTTP_PORTS");
 Console.WriteLine($"PORT: {port}, HTTP_PORTS: {httpPorts}");
 
-// Only configure URL if HTTP_PORTS is not set (for local development)
-if (string.IsNullOrEmpty(httpPorts))
+// .NET 9.0 will automatically use HTTP_PORTS if set
+// Only set UseUrls for local development (when HTTP_PORTS is not set)
+if (string.IsNullOrEmpty(httpPorts) && string.IsNullOrEmpty(Environment.GetEnvironmentVariable("RAILWAY_ENVIRONMENT")))
 {
     builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
-    Console.WriteLine($"Configured to listen on http://0.0.0.0:{port} (HTTP_PORTS not set)");
+    Console.WriteLine($"Configured to listen on http://0.0.0.0:{port} (local development)");
 }
 else
 {
-    Console.WriteLine($"Using Railway's HTTP_PORTS configuration: {httpPorts}");
-    // Let .NET 9.0 automatically use HTTP_PORTS - don't override it
+    Console.WriteLine($"Using Railway's HTTP_PORTS: {httpPorts} - letting .NET handle it automatically");
 }
 
 builder.Services.AddControllers();
