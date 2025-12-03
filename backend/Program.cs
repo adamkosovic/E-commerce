@@ -137,11 +137,11 @@ app.UseAuthorization();
 // app.UseStaticFiles();
 // app.MapFallbackToFile("index.html");
 
-app.MapControllers();
-
-// Simple health check endpoint
+// Simple health check endpoint - map before controllers
 app.MapGet("/health", () => new { status = "ok", timestamp = DateTime.UtcNow })
     .AllowAnonymous();
+
+app.MapControllers();
 
 // Configure port from Railway's PORT environment variable
 // Railway sets PORT automatically - we need to listen on that port
