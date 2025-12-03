@@ -88,8 +88,15 @@ builder.Services.AddCors(o =>
     // Note: AllowAnyOrigin() cannot be used with AllowCredentials()
 });
 
+// Configure JWT authentication
 var jwt = builder.Configuration.GetSection("Jwt");
-var keyBytes = Encoding.UTF8.GetBytes(jwt["Key"]!);
+var jwtKey = jwt["Key"] ?? "default-key-for-development-only-change-in-production";
+var jwtIssuer = jwt["Issuer"] ?? "backend";
+var jwtAudience = jwt["Audience"] ?? "backend";
+
+Console.WriteLine($"JWT Configuration - Issuer: {jwtIssuer}, Audience: {jwtAudience}");
+
+var keyBytes = Encoding.UTF8.GetBytes(jwtKey);
 
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -101,8 +108,8 @@ builder.Services
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = jwt["Issuer"],
-            ValidAudience = jwt["Audience"],
+            ValidIssuer = jwtIssuer,
+            ValidAudience = jwtAudience,
             IssuerSigningKey = new SymmetricSecurityKey(keyBytes),
 
             RoleClaimType = ClaimTypes.Role,
@@ -148,9 +155,9 @@ if (app.Environment.IsDevelopment())
 }
 
 // Skip authentication/authorization for OPTIONS (CORS preflight) and health checks
-app.UseWhen(context => 
-    !context.Request.Path.StartsWithSegments("/health") && 
-    context.Request.Method != "OPTIONS", 
+app.UseWhen(context =>
+    !context.Request.Path.StartsWithSegments("/health") &&
+    context.Request.Method != "OPTIONS",
     appBuilder =>
 {
     appBuilder.UseAuthentication();
@@ -200,27 +207,34 @@ app.MapGet("/", () => Results.Ok(new { message = "API is running", timestamp = D
 
 app.MapControllers();
 
-// Run database migrations on startup
-try
+// Run database migrations on startup (non-blocking)
+_ = Task.Run(async () =>
 {
-    Console.WriteLine("Checking database connection and running migrations...");
-    using (var scope = app.Services.CreateScope())
+    try
     {
-        var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-        dbContext.Database.Migrate();
-        Console.WriteLine("Database migrations completed successfully.");
+        await Task.Delay(1000); // Wait 1 second for app to fully start
+        Console.WriteLine("Checking database connection and running migrations...");
+        using (var scope = app.Services.CreateScope())
+        {
+            var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            await dbContext.Database.MigrateAsync();
+            Console.WriteLine("Database migrations completed successfully.");
+        }
     }
-}
-catch (Exception ex)
-{
-    Console.WriteLine($"WARNING: Database migration failed: {ex.Message}");
-    Console.WriteLine("Application will continue, but database operations may fail.");
-    // Don't crash the app - let it start even if DB is unavailable
-    // This allows health checks to work even if DB is down
-}
+    catch (Exception ex)
+    {
+        Console.WriteLine($"WARNING: Database migration failed: {ex.Message}");
+        Console.WriteLine($"Stack trace: {ex.StackTrace}");
+        Console.WriteLine("Application will continue, but database operations may fail.");
+    }
+});
 
+Console.WriteLine("========================================");
 Console.WriteLine("Application starting...");
-Console.WriteLine($"Health endpoint available at: /health");
-Console.WriteLine($"Root endpoint available at: /");
+Console.WriteLine($"Environment: {app.Environment.EnvironmentName}");
+Console.WriteLine($"Health endpoint: /health");
+Console.WriteLine($"Root endpoint: /");
 Console.WriteLine($"Listening on: http://0.0.0.0:{port}");
+Console.WriteLine("========================================");
+
 app.Run();
