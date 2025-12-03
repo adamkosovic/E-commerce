@@ -14,11 +14,22 @@ using Microsoft.AspNetCore.Hosting;
 var builder = WebApplication.CreateBuilder(args);
 
 // Configure port from Railway's PORT environment variable at builder level
+// Railway sets PORT automatically - configure the app to listen on that port
 var port = Environment.GetEnvironmentVariable("PORT");
 if (!string.IsNullOrEmpty(port))
 {
     builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
     Console.WriteLine($"Configured to listen on port: {port}");
+}
+else
+{
+    // Fallback: check ASPNETCORE_URLS or use default
+    var urls = Environment.GetEnvironmentVariable("ASPNETCORE_URLS");
+    if (string.IsNullOrEmpty(urls))
+    {
+        builder.WebHost.UseUrls("http://0.0.0.0:8080");
+        Console.WriteLine("WARNING: PORT not set, using default port 8080");
+    }
 }
 
 builder.Services.AddControllers();
