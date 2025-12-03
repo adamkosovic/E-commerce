@@ -21,11 +21,12 @@ var httpPorts = Environment.GetEnvironmentVariable("HTTP_PORTS");
 Console.WriteLine($"PORT: {port}, HTTP_PORTS: {httpPorts}");
 
 // Configure Kestrel to listen on the correct port and interface
-// This is the recommended way for Railway - doesn't override HTTP_PORTS
+// Railway uses IPv4, so bind to IPv4 explicitly (0.0.0.0)
 builder.WebHost.ConfigureKestrel(options =>
 {
-    options.ListenAnyIP(int.Parse(port));
-    Console.WriteLine($"Kestrel configured to listen on 0.0.0.0:{port}");
+    // Listen on IPv4 (0.0.0.0) - Railway uses IPv4
+    options.Listen(System.Net.IPAddress.Any, int.Parse(port));
+    Console.WriteLine($"Kestrel configured to listen on 0.0.0.0:{port} (IPv4)");
 });
 
 builder.Services.AddControllers(options =>
