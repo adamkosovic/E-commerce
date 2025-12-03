@@ -36,7 +36,12 @@ builder.WebHost.ConfigureKestrel(options =>
     Console.WriteLine($"Kestrel configured to listen on 0.0.0.0:{portNumber} (IPv4)");
 });
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .ConfigureApiBehaviorOptions(options =>
+    {
+        // Ensure API controllers work correctly
+        options.SuppressModelStateInvalidFilter = true;
+    });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -171,6 +176,7 @@ if (app.Environment.IsDevelopment())
 }
 
 // Skip authentication/authorization for OPTIONS (CORS preflight), health checks, and root
+// Note: Controllers with [AllowAnonymous] will still be accessible
 app.UseWhen(context =>
     !context.Request.Path.StartsWithSegments("/health") &&
     !context.Request.Path.StartsWithSegments("/healthz") &&
