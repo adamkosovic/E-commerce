@@ -150,6 +150,12 @@ if (!string.IsNullOrEmpty(port))
 {
     app.Urls.Clear();
     app.Urls.Add($"http://0.0.0.0:{port}");
+    Console.WriteLine($"Listening on port: {port}");
+}
+else
+{
+    Console.WriteLine("WARNING: PORT environment variable not set, using default");
 }
 
+Console.WriteLine("Application starting...");
 app.Run();
