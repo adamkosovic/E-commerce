@@ -13,13 +13,15 @@ using Microsoft.AspNetCore.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Railway sets HTTP_PORTS environment variable automatically
-// .NET 9.0 will automatically use HTTP_PORTS if set, so we don't need to configure it manually
-// This avoids the "Overriding HTTP_PORTS" warning
+// Railway sets PORT environment variable - we need to explicitly configure it
+// .NET 9.0 might not automatically bind to 0.0.0.0, so we'll set it explicitly
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 var httpPorts = Environment.GetEnvironmentVariable("HTTP_PORTS");
-var port = Environment.GetEnvironmentVariable("PORT");
-Console.WriteLine($"HTTP_PORTS: {httpPorts}, PORT: {port}");
-// Let .NET handle port binding automatically via HTTP_PORTS
+Console.WriteLine($"PORT: {port}, HTTP_PORTS: {httpPorts}");
+
+// Explicitly configure the URL to listen on all interfaces
+builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+Console.WriteLine($"Explicitly configured to listen on http://0.0.0.0:{port}");
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -146,7 +148,7 @@ app.UseAuthorization();
 // app.MapFallbackToFile("index.html");
 
 // Map health endpoint - must be accessible without any dependencies
-app.MapGet("/health", () => 
+app.MapGet("/health", () =>
 {
     Console.WriteLine("Health check called");
     return Results.Ok(new { status = "ok", timestamp = DateTime.UtcNow });
