@@ -21,6 +21,7 @@ WORKDIR /app
 COPY --from=build /app/publish .
 
 # Expose port (Railway will set PORT env var)
+# Railway automatically detects this port
 EXPOSE 8080
 
 # Set environment to Production
@@ -28,6 +29,9 @@ ENV ASPNETCORE_ENVIRONMENT=Production
 
 # Clear any conflicting URLS - let .NET use HTTP_PORTS automatically
 ENV ASPNETCORE_URLS=
+
+# Railway needs to know the port - set it explicitly
+ENV PORT=8080
 
 # Run the app
 ENTRYPOINT ["dotnet", "backend.dll"]
