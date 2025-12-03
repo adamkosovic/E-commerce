@@ -149,9 +149,11 @@ builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
 var app = builder.Build();
 
-// CORS must be the ABSOLUTE FIRST middleware - even before logging
+// Enable routing first (required for endpoint routing)
+app.UseRouting();
+
+// CORS must be called after UseRouting but before UseAuthentication/UseAuthorization
 // This is critical for CORS preflight (OPTIONS) requests
-// UseCors must be called before UseRouting, UseAuthentication, UseAuthorization
 app.UseCors("NgDev");
 
 // Ensure CORS headers are added even on errors
@@ -178,22 +180,22 @@ app.Use(async (context, next) =>
 {
     var origin = context.Request.Headers["Origin"].ToString();
     Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] {context.Request.Method} {context.Request.Path} from Origin: {origin}");
-    
+
     if (context.Request.Method == "OPTIONS")
     {
         Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] OPTIONS preflight - Access-Control-Request-Method: {context.Request.Headers["Access-Control-Request-Method"]}, Access-Control-Request-Headers: {context.Request.Headers["Access-Control-Request-Headers"]}");
     }
-    
+
     await next();
-    
+
     // Log response headers after CORS middleware has processed
     var corsOrigin = context.Response.Headers["Access-Control-Allow-Origin"].ToString();
     var corsMethods = context.Response.Headers["Access-Control-Allow-Methods"].ToString();
     var corsHeaders = context.Response.Headers["Access-Control-Allow-Headers"].ToString();
-    
+
     Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] Response Status: {context.Response.StatusCode}");
     Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] CORS Headers - Allow-Origin: {corsOrigin}, Allow-Methods: {corsMethods}, Allow-Headers: {corsHeaders}");
-    
+
     if (string.IsNullOrEmpty(corsOrigin) && !string.IsNullOrEmpty(origin))
     {
         Console.WriteLine($"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] WARNING: CORS header missing! Origin was: {origin}");
