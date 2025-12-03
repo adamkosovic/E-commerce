@@ -32,11 +32,7 @@ else
     // Let .NET 9.0 automatically use HTTP_PORTS - don't override it
 }
 
-builder.Services.AddControllers(options =>
-{
-    // Add global CORS filter to ensure CORS headers are always present
-    options.Filters.Add(new Microsoft.AspNetCore.Mvc.Cors.CorsAuthorizationFilterFactory("NgDev"));
-});
+builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
