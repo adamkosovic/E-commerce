@@ -1,5 +1,12 @@
 <div class="products-wrapper">
 
+  @if (errorMessage) {
+    <div style="color: red; padding: 20px; text-align: center;">
+      <p><strong>Error:</strong> {{ errorMessage }}</p>
+      <p>Check browser console (F12) for more details.</p>
+    </div>
+  }
+
   @if (products$ | async; as products) {
     @if (products.length > 0) {
 
