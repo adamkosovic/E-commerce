@@ -146,14 +146,21 @@
 
   /* Visa hamburgaren på mobil */
   .menu-toggle {
-    display: flex;
+    display: flex !important;
     background: rgba(0, 0, 0, 0.05);
     border-radius: 4px;
-    padding: 4px;
+    padding: 6px;
+    min-width: 40px;
+    min-height: 40px;
   }
   
   .menu-toggle:active {
     background: rgba(0, 0, 0, 0.1);
+  }
+  
+  .menu-toggle span {
+    background: #333 !important;
+    height: 3px;
   }
 
   /* Nav-list döljs som standard på mobil */
