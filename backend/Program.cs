@@ -121,7 +121,7 @@ builder.Services.AddCors(o =>
         .AllowAnyHeader()
         .AllowAnyMethod()
         .AllowCredentials());
-    
+
     // Also add a policy that allows all origins for debugging (remove in production if not needed)
     o.AddPolicy("AllowAll", p => p
         .AllowAnyOrigin()
@@ -209,18 +209,10 @@ if (app.Environment.IsDevelopment())
     app.UseHttpsRedirection();
 }
 
-// Skip authentication/authorization for OPTIONS (CORS preflight), health checks, and root
-// Note: Controllers with [AllowAnonymous] will still be accessible
-app.UseWhen(context =>
-    !context.Request.Path.StartsWithSegments("/health") &&
-    !context.Request.Path.StartsWithSegments("/healthz") &&
-    context.Request.Path != "/" &&
-    context.Request.Method != "OPTIONS",
-    appBuilder =>
-{
-    appBuilder.UseAuthentication();
-    appBuilder.UseAuthorization();
-});
+// Authentication and Authorization middleware
+// Note: Controllers with [AllowAnonymous] will bypass authorization
+app.UseAuthentication();
+app.UseAuthorization();
 
 // Map endpoints (UseEndpoints is implicit in .NET 6+ with MapControllers/MapGet)
 
