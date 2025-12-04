@@ -172,9 +172,8 @@ app.UseRouting();
 
 // CORS middleware - MUST be before UseAuthentication/UseAuthorization
 // This adds CORS headers to all responses
-// Use default policy (with explicit origins) for production
-// Fall back to AllowAll policy if default doesn't work
-app.UseCors("AllowAll"); // Temporarily use AllowAll to debug - change back to default after fixing 502
+// Use default policy with explicit origins for security
+app.UseCors(); // Uses the default policy with explicit Netlify origin
 
 // Log all incoming requests for debugging
 app.Use(async (context, next) =>
@@ -211,8 +210,18 @@ if (app.Environment.IsDevelopment())
 
 // Authentication and Authorization middleware
 // Note: Controllers with [AllowAnonymous] will bypass authorization
-app.UseAuthentication();
-app.UseAuthorization();
+// Skip authentication for static files like favicon.ico
+app.UseWhen(context =>
+    !context.Request.Path.StartsWithSegments("/favicon.ico") &&
+    !context.Request.Path.StartsWithSegments("/health") &&
+    !context.Request.Path.StartsWithSegments("/healthz") &&
+    context.Request.Path != "/" &&
+    context.Request.Method != "OPTIONS",
+    appBuilder =>
+{
+    appBuilder.UseAuthentication();
+    appBuilder.UseAuthorization();
+});
 
 // Map endpoints (UseEndpoints is implicit in .NET 6+ with MapControllers/MapGet)
 
