@@ -120,7 +120,13 @@ builder.Services.AddCors(o =>
         )
         .AllowAnyHeader()
         .AllowAnyMethod()
-        .SetIsOriginAllowedToAllowWildcardSubdomains());
+        .AllowCredentials());
+    
+    // Also add a policy that allows all origins for debugging (remove in production if not needed)
+    o.AddPolicy("AllowAll", p => p
+        .AllowAnyOrigin()
+        .AllowAnyHeader()
+        .AllowAnyMethod());
 });
 // Configure JWT authentication
 var jwt = builder.Configuration.GetSection("Jwt");
@@ -166,7 +172,9 @@ app.UseRouting();
 
 // CORS middleware - MUST be before UseAuthentication/UseAuthorization
 // This adds CORS headers to all responses
-app.UseCors();
+// Use default policy (with explicit origins) for production
+// Fall back to AllowAll policy if default doesn't work
+app.UseCors("AllowAll"); // Temporarily use AllowAll to debug - change back to default after fixing 502
 
 // Log all incoming requests for debugging
 app.Use(async (context, next) =>
