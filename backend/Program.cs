@@ -120,13 +120,7 @@ builder.Services.AddCors(o =>
         )
         .AllowAnyHeader()
         .AllowAnyMethod()
-        .AllowCredentials());
-
-    // Also add a policy that allows all origins for debugging (remove in production if not needed)
-    o.AddPolicy("AllowAll", p => p
-        .AllowAnyOrigin()
-        .AllowAnyHeader()
-        .AllowAnyMethod());
+        .SetIsOriginAllowedToAllowWildcardSubdomains());
 });
 // Configure JWT authentication
 var jwt = builder.Configuration.GetSection("Jwt");
@@ -210,18 +204,11 @@ if (app.Environment.IsDevelopment())
 
 // Authentication and Authorization middleware
 // Note: Controllers with [AllowAnonymous] will bypass authorization
-// Skip authentication for static files like favicon.ico
-app.UseWhen(context =>
-    !context.Request.Path.StartsWithSegments("/favicon.ico") &&
-    !context.Request.Path.StartsWithSegments("/health") &&
-    !context.Request.Path.StartsWithSegments("/healthz") &&
-    context.Request.Path != "/" &&
-    context.Request.Method != "OPTIONS",
-    appBuilder =>
-{
-    appBuilder.UseAuthentication();
-    appBuilder.UseAuthorization();
-});
+// Authentication and Authorization middleware
+// Note: Controllers with [AllowAnonymous] will bypass authorization
+// OPTIONS requests (CORS preflight) are handled by CORS middleware and don't need auth
+app.UseAuthentication();
+app.UseAuthorization();
 
 // Map endpoints (UseEndpoints is implicit in .NET 6+ with MapControllers/MapGet)
 
