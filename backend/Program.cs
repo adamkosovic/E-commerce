@@ -248,6 +248,13 @@ app.MapGet("/healthz", () =>
 })
 .AllowAnonymous();
 
+// Favicon endpoint - browsers automatically request this
+app.MapGet("/favicon.ico", () =>
+{
+    return Results.NoContent(); // Return 204 No Content
+})
+.AllowAnonymous();
+
 // Also add root endpoint for testing
 app.MapGet("/", (HttpContext context) =>
 {
