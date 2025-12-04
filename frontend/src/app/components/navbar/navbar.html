@@ -9,8 +9,11 @@
           class="menu-toggle"
           type="button"
           (click)="toggleMenu()"
-          aria-label="Toggle navigation">
-            <img src="assets/icons/lines.png" alt="menu icon" class="menu-icon" />
+          aria-label="Toggle navigation"
+          [class.active]="menuOpen">
+          <span></span>
+          <span></span>
+          <span></span>
         </button>
 
         <ul class="nav-list" [class.open]="menuOpen">

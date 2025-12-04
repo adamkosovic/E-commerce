@@ -96,22 +96,38 @@
 .menu-toggle {
   display: none;  /* Visas bara på mobil i media query */
   flex-direction: column;
-  justify-content: center;
-  gap: 4px;
-  width: 28px;
+  justify-content: space-between;
+  width: 30px;
   height: 24px;
   background: none;
   border: none;
   padding: 0;
   cursor: pointer;
+  position: relative;
+  z-index: 1001;
 }
 
 .menu-toggle span {
   display: block;
-  height: 2px;
+  height: 3px;
   width: 100%;
   background: var(--color-text);
-  border-radius: 10px;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+  transform-origin: center;
+}
+
+/* Hamburger animation when menu is open */
+.menu-toggle.active span:nth-child(1) {
+  transform: rotate(45deg) translate(8px, 8px);
+}
+
+.menu-toggle.active span:nth-child(2) {
+  opacity: 0;
+}
+
+.menu-toggle.active span:nth-child(3) {
+  transform: rotate(-45deg) translate(8px, -8px);
 }
 
 
