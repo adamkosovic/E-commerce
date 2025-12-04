@@ -14,7 +14,7 @@ A full-stack e-commerce application with product browsing, shopping cart, favori
 - Save favorite products
 - User registration and login
 - Admin panel for product management
-- Order processing
+
 
 ## 🛠 Tech Stack
 
