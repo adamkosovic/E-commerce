@@ -1,6 +1,6 @@
 # E-Commerce Application
 
-A full-stack e-commerce application with product browsing, shopping cart, favorites, and admin product management.
+A full-stack e-commerce application with shopping cart, favorites, and admin product management.
 
 ## 🚀 Live Demo
 
