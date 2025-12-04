@@ -114,7 +114,7 @@ builder.Services.AddCors(o =>
 {
     o.AddDefaultPolicy(p => p
         .WithOrigins(
-            "https://mellow-griffin-feb028.netlify.app",
+            "https://codee-commerce.netlify.app",
             "http://localhost:4200",
             "https://localhost:4200"
         )
