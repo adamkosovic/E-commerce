@@ -1,86 +1,222 @@
 <header>
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <span>Fri frakt över 499 kr</span>
+    <span>•</span>
+    <span>30 dagars retur</span>
+    <span>•</span>
+    <span>Hållbara material</span>
+  </div>
+
+  <!-- NAVBAR -->
   <nav class="navbar">
+
     <div class="navbar-div">
 
-      <!-- Vänster: logo / huvudmeny + hamburger meny -->
-      <div class="nav-left">
-        <!-- Hamburgerknapp (visas bara i mobilvy) -->
-        <button
-          class="menu-toggle"
-          type="button"
-          (click)="toggleMenu()"
-          aria-label="Toggle navigation"
-          [class.active]="menuOpen">
-          <span></span>
-          <span></span>
-          <span></span>
-        </button>
+      <!-- MOBILE MENU BUTTON -->
+      <button
+        class="menu-toggle"
+        type="button"
+        (click)="toggleMenu()"
+        aria-label="Toggle navigation"
+        [class.active]="menuOpen">
 
-        <ul class="nav-list" [class.open]="menuOpen">
-          <li class="navLi">
-            <a
-              routerLink=""
-              routerLinkActive="is-active"
-              [routerLinkActiveOptions]="{ exact: true }"
-              (click)="closeMenu()"
-              >Home</a
-            >
-          </li>
-          <li class="navLi">
-            <a routerLink="/shop" routerLinkActive="is-active" (click)="closeMenu()">Shop</a>
-          </li>
-        </ul>
-      </div>
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
 
-      <ul class="navbar-icons">
-        <!-- HEART ICON -->
-        <li class="icon-item">
-          <a routerLink="/favorites">
-            <img
-              src="assets/icons/heart-fill.svg"
-              alt="heart"
-              class="nav-icon"
-            />
+      <!-- LOGO -->
+      <a
+        routerLink="/"
+        class="brand"
+        (click)="closeMenu()">
+
+        NORDEN
+      </a>
+
+      <!-- NAV LINKS -->
+      <ul
+        class="nav-list"
+        [class.open]="menuOpen">
+
+        <li class="navLi">
+          <a
+            routerLink="/"
+            routerLinkActive="is-active"
+            [routerLinkActiveOptions]="{ exact: true }"
+            (click)="closeMenu()">
+
+            Home
           </a>
         </li>
 
-        <!-- CART ICON -->
-        <li class="icon-item">
-          <a routerLink="/cart"></a>
-          <img
-            src="assets/icons/bag-fill.svg"
-            alt="shopping-cart"
-            class="nav-icon"
-            routerLink="/cart"
-          />
+        <li class="navLi">
+          <a
+            routerLink="/shop"
+            routerLinkActive="is-active"
+            (click)="closeMenu()">
+
+            Shop
+          </a>
         </li>
 
-        <!-- ACCOUNT DROPDOWN -->
-        <li class="icon-item dropdown" *ngIf="auth.isLoggedIn()">
-          <img
-            src="assets/icons/person-fill.svg"
-            alt="account"
-            class="nav-icon profile-icon"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-          />
+        <li class="navLi">
+          <a
+            routerLink="/categories"
+            routerLinkActive="is-active"
+            (click)="closeMenu()">
 
-          <ul class="dropdown-menu dropdown-menu-end">
-            <li *ngIf="auth.isAdmin()">
-              <a class="dropdown-item" routerLink="/admin/products">Admin</a>
-            </li>
-            <li><a class="dropdown-item" (click)="onLogout()">Logout</a></li>
-          </ul>
+            Categories
+          </a>
         </li>
 
-        <!-- IF NOT LOGGED IN SHOW LOGIN/REGISTER -->
-        <li class="icon-item" *ngIf="!auth.isLoggedIn()">
-          <a class="nav-link small-link" routerLink="/login">Login</a>
+        <li class="navLi">
+          <a
+            routerLink="/about"
+            routerLinkActive="is-active"
+            (click)="closeMenu()">
+
+            About Us
+          </a>
         </li>
-        <li class="icon-item" *ngIf="!auth.isLoggedIn()">
-          <a class="nav-link small-link" routerLink="/register">Register</a>
+
+        <!-- ADMIN -->
+
+        <li
+          class="navLi auth-mobile"
+          *ngIf="auth.isLoggedIn() && auth.isAdmin()">
+
+          <a
+            routerLink="/admin/products"
+            (click)="closeMenu()">
+
+            Admin
+          </a>
         </li>
+
+        <!-- LOGOUT -->
+
+        <li
+          class="navLi auth-mobile"
+          *ngIf="auth.isLoggedIn()">
+
+          <a
+            (click)="onLogout(); closeMenu()">
+
+            Logout
+          </a>
+        </li>
+
+        <!-- MOBILE LOGIN -->
+
+        <li
+          class="navLi auth-mobile"
+          *ngIf="!auth.isLoggedIn()">
+
+          <a
+            routerLink="/login"
+            (click)="closeMenu()">
+
+            Login
+          </a>
+        </li>
+
+        <!-- MOBILE REGISTER -->
+
+        <li
+          class="navLi auth-mobile"
+          *ngIf="!auth.isLoggedIn()">
+
+          <a
+            routerLink="/register"
+            (click)="closeMenu()">
+
+            Register
+          </a>
+        </li>
+
       </ul>
+
+      <!-- RIGHT SIDE -->
+
+      <ul class="navbar-icons">
+
+        <!-- SEARCH -->
+
+        <li class="icon-item">
+          <button
+            class="icon-btn"
+            aria-label="Search">
+
+            <img
+              src="assets/icons/search-filled.svg"
+              alt="search"
+              class="nav-icon"
+            />
+
+          </button>
+        </li>
+
+        <!-- FAVORITES -->
+
+        <li class="icon-item">
+          <a
+            routerLink="/favorites"
+            class="icon-btn"
+            aria-label="Favorites">
+
+            <img
+              src="assets/icons/heart-icon.svg"
+              alt="favorites"
+              class="nav-icon"
+            />
+
+          </a>
+        </li>
+
+        <!-- CART -->
+
+        <li class="icon-item">
+          <a
+            routerLink="/cart"
+            class="icon-btn cart-icon"
+            aria-label="Cart">
+
+            <img
+              src="assets/icons/shopping-bag.svg"
+              alt="cart"
+              class="nav-icon"
+            />
+
+          </a>
+        </li>
+
+        <!-- ACCOUNT ICON -->
+
+        <li
+          class="icon-item mobile-hide"
+          *ngIf="!auth.isLoggedIn()">
+
+          <a
+            routerLink="/login"
+            class="icon-btn"
+            aria-label="Login">
+
+            <img
+              src="assets/icons/person-outline.svg"
+              alt="login"
+              class="nav-icon"
+            />
+
+          </a>
+        </li>
+
+      </ul>
+
     </div>
+
   </nav>
+
 </header>
