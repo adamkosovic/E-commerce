@@ -14,44 +14,24 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Railway sets PORT environment variable (e.g., "8080")
 // We need to explicitly set HTTP_PORTS so .NET uses the correct port
-var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+var port = Environment.GetEnvironmentVariable("PORT");
 var httpPorts = Environment.GetEnvironmentVariable("HTTP_PORTS");
 
-// Clear ASPNETCORE_URLS if it's set incorrectly
-var aspnetcoreUrls = Environment.GetEnvironmentVariable("ASPNETCORE_URLS");
-if (!string.IsNullOrEmpty(aspnetcoreUrls))
+if (!string.IsNullOrEmpty(port))
 {
-    Console.WriteLine($"ASPNETCORE_URLS was set to: {aspnetcoreUrls}");
-    Environment.SetEnvironmentVariable("ASPNETCORE_URLS", null);
-    Console.WriteLine("ASPNETCORE_URLS cleared");
+    builder.WebHost.ConfigureKestrel(options =>
+    {
+        if (int.TryParse(port, out int portNumber))
+        {
+            options.Listen(System.Net.IPAddress.Any, portNumber);
+            Console.WriteLine($"Kestrel explicitly configured to listen on 0.0.0.0:{portNumber} (IPv4)");
+        }
+    });
 }
 
-// Explicitly set HTTP_PORTS to ensure .NET uses the correct port
-if (string.IsNullOrEmpty(httpPorts))
-{
-    Environment.SetEnvironmentVariable("HTTP_PORTS", port);
-    Console.WriteLine($"HTTP_PORTS set to: {port}");
-}
-else
-{
-    Console.WriteLine($"HTTP_PORTS already set to: {httpPorts}");
-}
 
 Console.WriteLine($"PORT: {port}, HTTP_PORTS: {Environment.GetEnvironmentVariable("HTTP_PORTS")}");
 
-// Explicitly configure Kestrel to listen on IPv4 and the correct port
-builder.WebHost.ConfigureKestrel(options =>
-{
-    if (int.TryParse(port, out int portNumber))
-    {
-        options.Listen(System.Net.IPAddress.Any, portNumber);
-        Console.WriteLine($"Kestrel explicitly configured to listen on 0.0.0.0:{portNumber} (IPv4)");
-    }
-    else
-    {
-        Console.WriteLine($"ERROR: Invalid port value '{port}'. Using default configuration.");
-    }
-});
 
 builder.Services.AddControllers()
     .ConfigureApiBehaviorOptions(options =>

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/Users/adamkosovic/Desktop/Hemnet2/backend/backend.csproj": {}
+    "/Users/adamkosovic/Desktop/E-commerce/backend/backend.csproj": {}
   },
   "projects": {
-    "/Users/adamkosovic/Desktop/Hemnet2/backend/backend.csproj": {
+    "/Users/adamkosovic/Desktop/E-commerce/backend/backend.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/adamkosovic/Desktop/Hemnet2/backend/backend.csproj",
+        "projectUniqueName": "/Users/adamkosovic/Desktop/E-commerce/backend/backend.csproj",
         "projectName": "backend",
-        "projectPath": "/Users/adamkosovic/Desktop/Hemnet2/backend/backend.csproj",
+        "projectPath": "/Users/adamkosovic/Desktop/E-commerce/backend/backend.csproj",
         "packagesPath": "/Users/adamkosovic/.nuget/packages/",
-        "outputPath": "/Users/adamkosovic/Desktop/Hemnet2/backend/obj/",
+        "outputPath": "/Users/adamkosovic/Desktop/E-commerce/backend/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/Users/adamkosovic/.nuget/NuGet/NuGet.Config"
