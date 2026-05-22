@@ -1,20 +1,33 @@
-
 <section class="hero">
-  <div class="homeOne">
-    <div class="home-firstsection">
-      <h1>Better clothing for the planet</h1>
+  <div class="hero-card">
+
+    <div class="hero-content">
+      <p class="eyebrow">HÅLLBART MODE</p>
+
+      <h1>Better clothing<br />for the planet</h1>
+
       <p class="hero-subtitle">
-        Thoughtfully designed essentials made to last, using more responsible materials.
+        Tidlösa plagg tillverkade med omtanke om människor och miljö.
       </p>
-      <button (click)="shop()">Shop all</button>
+
+      <div class="hero-actions">
+        <button class="primary-btn" (click)="shop()">Shoppa nyheter</button>
+        <button class="secondary-btn">Se kollektioner</button>
+      </div>
+
+      <div class="hero-benefits">
+        <span><img src="assets/icons/shipping.svg" alt=""> Fri frakt över 499 kr</span>
+        <span><img src="assets/icons/returnarrows.svg" alt=""> 30 dagars retur</span>
+        <span><img src="assets/icons/material.svg" alt=""> Hållbara material</span>
+      </div>
     </div>
 
-    <div class="home-image-wrapper">
+    <div class="hero-image">
       <img
-        class="homeOne-img"
-        src="assets/images/clothesImgHero.jpg"
-        alt="Hero clothing image"
+        src="assets/images/clothesImgHero2.jpg"
+        alt="Kläder på galge"
       />
     </div>
+
   </div>
 </section>
