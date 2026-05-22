@@ -1,0 +1,185 @@
+.clothes-news {
+  padding: 0 32px 90px;
+}
+
+.news-grid {
+  max-width: 1480px;
+  margin: 0 auto;
+
+  display: grid;
+  grid-template-columns: 1.15fr 1.15fr 1fr;
+  gap: 18px;
+}
+
+.news-card {
+  position: relative;
+  min-height: 230px;
+  display: flex;
+  overflow: hidden;
+  border-radius: 14px;
+  background: #f7f4ef;
+}
+
+.news-card img {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+
+  width: 54%;
+  height: 100%;
+
+  object-fit: cover;
+}
+
+.news-text {
+  position: relative;
+  z-index: 2;
+
+  width: 45%;
+  padding: 32px 28px;
+
+  display: flex;
+  flex-direction: column;
+  align-self: stretch;
+}
+
+.news-text h3 {
+  margin: 0 0 8px;
+
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.6px;
+
+  color: #111;
+}
+
+.news-text p {
+  margin-bottom: 24px;
+
+  font-size: 15px;
+  line-height: 1.45;
+
+  color: #555;
+}
+
+.news-text a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: auto;
+
+  height: 44px;
+  padding: 0 22px;
+
+  margin-top: auto;
+  width: fit-content;
+
+  border-radius: 8px;
+  border: 1px solid #d9d9d9;
+
+  background: rgba(255,255,255,.92);
+
+  font-size: 14px;
+  font-weight: 600;
+
+  color: #111;
+  text-decoration: none;
+
+  transition:
+    background .2s ease,
+    transform .2s ease;
+
+  margin-top: auto;
+  width: 170px;
+}
+
+.news-text a:hover {
+  background: white;
+  transform: translateY(-1px);
+}
+
+/* TABLET */
+
+@media (max-width: 1100px) {
+  .clothes-news {
+    padding: 0 24px 70px;
+  }
+
+  .news-grid {
+    grid-template-columns: 1fr;
+    max-width: 760px;
+  }
+
+  .news-card {
+    min-height: 220px;
+  }
+
+  .news-text {
+    width: 46%;
+  }
+
+  .news-card img {
+    width: 56%;
+  }
+}
+
+/* MOBILE */
+
+@media (max-width: 600px) {
+  .clothes-news {
+    padding: 0 14px 56px;
+  }
+
+  .news-grid {
+    gap: 14px;
+  }
+
+  .news-card {
+    min-height: 210px;
+  }
+
+  .news-text {
+    width: 52%;
+    padding: 24px 20px;
+  }
+
+  .news-text h3 {
+    font-size: 24px;
+  }
+
+  .news-text p {
+    font-size: 14px;
+    line-height: 1.45;
+  }
+
+  .news-text a {
+    width: 140px;
+    height: 42px;
+    font-size: 14px;
+  }
+
+  .news-card img {
+    width: 50%;
+  }
+}
+
+/* EXTRA SMALL */
+
+@media (max-width: 390px) {
+  .news-card {
+    min-height: 230px;
+  }
+
+  .news-text {
+    width: 58%;
+    padding: 22px 18px;
+  }
+
+  .news-text h3 {
+    font-size: 22px;
+  }
+
+  .news-card img {
+    width: 46%;
+  }
+}
