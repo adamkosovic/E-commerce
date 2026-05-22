@@ -1,0 +1,25 @@
+<section class="popular-products">
+  <div class="section-header">
+    <h2>Populära produkter</h2>
+    <a routerLink="/shop">Visa alla</a>
+  </div>
+
+  <p *ngIf="loading">Laddar produkter...</p>
+
+  <div class="products-grid" *ngIf="!loading">
+    <article class="product-card" *ngFor="let product of products">
+      <button class="wishlist-btn">
+        <img src="assets/icons/heart-icon.svg" alt="">
+      </button>
+
+      <div class="product-image">
+        <img [src]="product.imageUrl" [alt]="product.title" title="product"/>
+      </div>
+
+      <div class="product-info">
+        <h3>{{ product.title }}</h3>
+        <p>{{ product.price }} kr</p>
+      </div>
+    </article>
+  </div>
+</section>
